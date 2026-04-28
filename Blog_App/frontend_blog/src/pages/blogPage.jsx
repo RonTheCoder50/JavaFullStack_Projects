@@ -9,8 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 
 
 import axios from "axios";
-import { useParams } from "react-router";
-import { useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router";
+import { getPostAPI, likeAPI, postCommentAPI, bookmarkAPI, deleteBlogAPI } from "./API";
 
 
 export default function BlogPage_Card() {
@@ -42,17 +42,14 @@ export default function BlogPage_Card() {
     async function LikeAPI() {
         try {
             const post_id = blogData.id;
-            const api = await axios.post(
-                `http://localhost:8080/post/like/${post_id}/${user_id}`
-            );
+            const data = await likeAPI(post_id, user_id); //like api call (like / dislike)
 
-            if(api.data === 'liked') {
+            if(data === 'liked') {
                 setBlogData(prev => ({
                     ...prev,
                     likes: [...prev.likes, { user: { id: user_id } }]
                 }));
             } else {
-                 
                 setBlogData(prev => ({
                     ...prev,
                     likes: prev.likes.filter(
@@ -60,9 +57,6 @@ export default function BlogPage_Card() {
                     )
                 }));
             }
-
-            console.log('server response for post like/dislike: ', api.data);
-            console.log('after like/dislike data: ', blogData);
         } catch (err) {
             console.log(err);
         }
@@ -81,67 +75,28 @@ export default function BlogPage_Card() {
             return;
         }
 
-        const api = await axios.post(
-            `http://localhost:8080/post/comment`,
-            commentObj, 
-            {headers: {
-                authorization: `Bearer ${token}`
-            }}
-        );
+        const postComment = await postCommentAPI(token, commentObj); //api call (add comment api)
+        const updatePostData = await getPostAPI(blogData.id, token); //api call (get post data)
 
-        //update/refresh page  
-        const updateApi = await axios.get(`http://localhost:8080/post/${blogData.id}`, 
-            {headers: {
-                    authorization: `Bearer ${token}`
-            }}
-        );
-        
-        setBlogData(updateApi.data); //now comment auto-update without page refresh!
+        setBlogData(updatePostData); //now comment auto-update without page refresh!
+        console.log("api response: ", postComment.data);
 
-        console.log("api response: ", api.data);
         setAddCommentActive(false);
         setCommentData('');
     }
 
     async function BookMarkAPI() {
-        const api = await axios.post(
-            `http://localhost:8080/post/bookmark/${blogData.id}/${user_id}`,
-            {headers: {
-                    authorization: `Bearer ${token}`
-            }}
-        );
+        const data = await bookmarkAPI(blogData.id, user_id, token);
+        console.log(data);
 
-        console.log(api.data);
-        const isBook = api.data.trim();
+        const isBook = data.trim();
         setToggleBookMark(isBook === 'saved' ? true : false);
     }
 
     async function DeleteAPI() {
-        try {
-            const confirmAction = window.confirm("Are you sure you want to delete?");
-            if(!confirmAction) {
-                alert('user click decline to delete blog!');
-                return;
-            } 
-
-            const api = await axios.delete(
-                `http://localhost:8080/post/remove/${id}/${user_id}`,
-                {headers: {
-                    authorization: `Bearer ${token}`
-                }}
-            );
-
-            console.log(api.data);
-
-            if(!api.status === 200) {
-                alert('unable to delete something went wrong!');
-                return;
-            }  
-
-            navigate('/dashboard');
-        } catch(err) {
-            console.log(err);
-        }
+        const deleteAPI = await deleteBlogAPI(id, user_id, token);
+        console.log(deleteAPI);
+        navigate('/dashboard');
     }
 
     async function UpdateAPI() {
@@ -151,21 +106,13 @@ export default function BlogPage_Card() {
             content: updateBlogData.content,
             userId: user_id
         }
-
-        console.log("data: ", data);
-        const api = await axios.put(
-            `http://localhost:8080/post/update`, 
-            data,
-            {headers: {
-                    "Content-Type": "application/json",
-                    authorization: `Bearer ${token}`
-            }}
-        );
-        console.log(api.data);
+        
+        const updatePostAPIData = await updateBlogData(data, token);
+        console.log(updatePostAPIData);
 
         //toggle form
         setToggleUpdateBlog(false);
-        setBlogData(api.data);
+        setBlogData(updatePostAPIData);
     }
 
     function handleComment(e) {

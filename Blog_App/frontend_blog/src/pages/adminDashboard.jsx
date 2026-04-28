@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
-import { userInfoApiCall } from "./API";
+import { userDeleteAPI, userInfoApiCall } from "./API";
 
 export default function UserPanelPage({ userData, setUserData, filterData }) {
     const theme = localStorage.getItem('theme');
@@ -89,12 +89,8 @@ function UserCard({ data, setUserData }) {
         }
 
         if(confirm('do you wanna delete this user ?')) {
-            const api = await axios.delete(`http://localhost:8080/auth/delete/${data.id}`,
-                {headers: {
-                    authorization: `Bearer ${token}`
-                }}
-            );
-            console.log(api.data);
+            const res = await userDeleteAPI(data.id, token);
+            console.log(res);
 
             const response = await userInfoApiCall();
             setUserData(response.data);

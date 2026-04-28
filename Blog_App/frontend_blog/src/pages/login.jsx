@@ -12,56 +12,38 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import { Link } from "react-router"
-import axios from "axios";
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useState } from "react"
+
+import { userLoginAPI, userProfileAPI } from "./API"
 
 export default function LoginPage() {
     const [info, setInfo] = useState({ email: '', password: '' });
     const navigate = useNavigate();
 
     async function handleSubmit() {
-        try {
-            const resp = await axios.post('http://localhost:8080/auth/login', info); //gives bearer token
-            if(resp.data === "bad404") {
-                alert('wrong user-email or password, try again!');
-                console.log(resp.data);
-            }
-            
-            const userInfoAPI = await axios.get('http://localhost:8080/auth/profile', 
-                {headers: {
-                    authorization: `Bearer ${resp.data}`
-                }}
-            );
+        //api calls !
+        const loginToken = await userLoginAPI(); 
+        const userInfo = await userProfileAPI(loginToken, info);
 
-            const userData = {
-                id: userInfoAPI.data.id,
-                username: userInfoAPI.data.username,
-                email: userInfoAPI.email,
-                password: userInfoAPI.password,
-                role: userInfoAPI.data.role    
-            }
-            console.log("user: ", userData);
-
-            localStorage.setItem('user', JSON.stringify(userData)); //user info store!
-            localStorage.setItem('token', resp.data); //JWT token store!
-            navigate('/dashboard');
-            
-            setInfo({
-                name: '',
-                email: '',
-                password: ''
-            });
-        } catch (err) {
-            console.log("error: " + err);
-
-            if (err.response && err.response.status === 401) {
-                alert("Invalid email or password ❌");
-            } else {
-                alert("Something went wrong ⚠️");
-            }
+        const userData = {
+            id: userInfo.id,
+            username: userInfo.username,
+            email: userInfo.email,
+            password: userInfo.password,
+            role: userInfo.role    
         }
+
+        console.log("user: ", userData);
+        localStorage.setItem('user', JSON.stringify(userData)); //user info store!
+        localStorage.setItem('token', loginToken); //JWT token store!
+        navigate('/dashboard');
+            
+        setInfo({
+            name: '',
+            email: '',
+            password: ''
+        });
     }
 
     function handleEmail(e) {

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { useNavigate } from "react-router";
 
-import axios from "axios";
+import { addPostAPI } from "./API";
 
 export default function AddBlogForm() {
   const theme = localStorage.getItem('theme');
@@ -37,11 +37,10 @@ export default function AddBlogForm() {
       uid: user.id
     };
 
-    console.log("Blog Data:", newForm);
-
-    // 👉 call API here
-    const api = await axios.post(`http://localhost:8080/post/add`, newForm);
-    console.log("blog uploaded successfully: ", api.data);
+    // API here
+    const token = localStorage.getItem('token');
+    const addPostAPIData = await addPostAPI(newForm, token);
+    console.log("Blog uploaded successfully: ", addPostAPIData);
 
     setForm({
       title: "",

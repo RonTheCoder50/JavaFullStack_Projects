@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 
 import { useNavigate } from "react-router";
+import { userLoginAPI, userProfileAPI } from "./API";
 
 export default function IntroPage() {
   const navigate = useNavigate();
@@ -11,27 +11,22 @@ export default function IntroPage() {
     localStorage.removeItem('user');
      
     const info = {
-      'email': 'demo01@gmail.com',
-      'password': 'demo@01'
+      'email': 'recruter123@gmail.com',
+      'password': 'recruter@123'
     };
 
       try {
-          const token = await axios.post(`http://localhost:8080/auth/login`, info); //login
-          localStorage.setItem('token', token.data); //storing jwt token!
+          const token = await userLoginAPI(info); //login
+          localStorage.setItem('token', token); //storing jwt token!
           
-          const profile = await axios.get('http://localhost:8080/auth/profile', 
-            {headers: {
-                authorization: `Bearer ${token.data}`
-            }}
-          );
-          
-          console.log('profile: ', profile.data);
+          const profile = await userProfileAPI(token);
+          console.log('profile: ', profile);
 
             const userData = {
-                id: profile.data.id,
-                username: profile.data.username,
-                email: profile.data.email,
-                password: profile.data.password,
+                id: profile.id,
+                username: profile.username,
+                email: profile.email,
+                password: profile.password,
                 role: 'ADMIN'
             }
 
@@ -41,8 +36,6 @@ export default function IntroPage() {
         alert('failed to retrive, try again!!');
         console.log(e);
       }
-
-
   }
 
   return (

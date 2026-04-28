@@ -12,44 +12,35 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useState } from "react"
-import axios from "axios"
-import { useNavigate } from "react-router"
+
+import { userRegisterAPI, userLoginAPI } from "./API"
 
 export default function RegisterPage() {
     const [info, setInfo] = useState({ username: '', email: '', password: '' });
     const navigate = useNavigate();
 
     async function handleSubmit() {
-        try {
-            const resp = await axios.post('http://localhost:8080/auth/register', info);
-            console.log(resp.data);
-
-            const resp2 = await axios.post(`http://localhost:8080/auth/login`, info);
-            localStorage.setItem('token', resp2.data); //storing jwt token !
-
-            const userData = {
-                id: resp.data.id,
-                username: resp.data.username,
+        const data = await userRegisterAPI(info); //register api call
+        const token = await userLoginAPI(info); //login api call
+        localStorage.setItem('token', token); //storing jwt token on localStorage
+        const userData = {
+                id: data.id,
+                username: data.username,
                 email: info.email,
                 password: info.password,
-                role: resp.data.role
-            }
-
-            localStorage.setItem('user', JSON.stringify(userData));
-            navigate('/dashboard');
-            
-            setInfo({
-                name: '',
-                email: '',
-                password: ''
-            });
-        } catch (e) {
-            console.log("error: " + e);
-            alert('User already exists with this email !');
-            return;
+                role: data.role
         }
+
+        localStorage.setItem('user', JSON.stringify(userData)); //storing login userdata locally
+        navigate('/dashboard');
+            
+        setInfo({
+            name: '',
+            email: '',
+            password: ''
+        });
     }
 
     function handleName(e) {

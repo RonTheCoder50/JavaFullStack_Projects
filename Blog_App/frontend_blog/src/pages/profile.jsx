@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
+import { apiCall, userProfileAPI } from "./API";
 
 
 export default function ProfileCard() {
@@ -12,27 +12,23 @@ export default function ProfileCard() {
   const theme = localStorage.getItem('theme');
 
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
 
     useEffect(() => {  
         async function fetchProfile() {
-            const response = await axios.get(`http://localhost:8080/auth/profile`, 
-              {headers: {
-                authorization: `Bearer ${localStorage.getItem('token')}`
-              }}
-            );
-            setData(response.data);
-
-            console.log(response.data);  
+            const profileData = await userProfileAPI(token);
+            setData(profileData);
+            console.log(profileData);  
         }
 
         fetchProfile();
-    }, []);
+    }, [token]);
 
     useEffect(() => {
       //fetch data via api
       async function fetchData() {
-        const response = await axios.get('http://localhost:8080/post/all');
-        setBlogListData(response.data);
+        const data = await apiCall();
+        setBlogListData(data);
       }
 
       fetchData();
