@@ -40,16 +40,14 @@ public class UserService {
     //sign-up
     public ResponseEntity<String> signup(Users user) {
         Users us = userRepo.findByUsername(user.getUsername());
-        if(us != null) { //if user already? send for login!
-            return ResponseEntity.status(203).body("already exists!");
-        } else {
-            user.setDateOfJoining(LocalDate.now());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(new ArrayList<>());
-            user.addRole("ROLE_USER");
-            userRepo.save(user);
-            return ResponseEntity.ok("user added successfully!");
-        }
+        System.out.println(us.getUsername() + " " + us.getPassword());
+
+        user.setDateOfJoining(LocalDate.now());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(new ArrayList<>());
+        user.addRole("ROLE_USER");
+        userRepo.save(user);
+        return ResponseEntity.ok("user added successfully!");
     }
 
     public ResponseLoginDto login(RequestLoginDto user) {
@@ -60,8 +58,6 @@ public class UserService {
                             user.getPassword()
                     )
             );
-
-            System.out.println("login user authority's: " + auth.getAuthorities());
 
             Users us = userRepo.findByUsername(user.getUsername());
 

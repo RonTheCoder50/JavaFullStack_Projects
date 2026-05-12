@@ -4,11 +4,12 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
 import { useState } from "react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { loginAPI } from "@/API"
 
 export default function LoginPage() {
     const [info, setInfo] = useState({username: '', password: ''});
+    const navigate = useNavigate();
 
     function handleUsername(e) {
             setInfo({
@@ -26,8 +27,18 @@ export default function LoginPage() {
     
     async function handleSubmit(e) {
         e.preventDefault();
-        const response = await loginAPI(info);
-        console.log("server response: ", response === undefined ? 'no response | request failed' : response.data);
+        try {
+            const response = await loginAPI(info);
+            localStorage.setItem("token", response?.data?.bearerToken);  
+
+            console.log("server response: ", response === undefined 
+                ? 'no response | request failed' 
+                : response.data
+            );
+            navigate('/main');
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     return (

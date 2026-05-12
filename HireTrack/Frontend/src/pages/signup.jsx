@@ -10,13 +10,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { useState } from "react"
 
 import { loginAPI, signupAPI } from "@/API"
 
 export default function SignupPage() {
     const [info, setInfo] = useState({username: '', password: ''});
+    const navigate = useNavigate();
 
     function handleUsername(e) {
         setInfo({
@@ -34,12 +35,20 @@ export default function SignupPage() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const response = await signupAPI(info);
-        console.log("server response: ", response.data);
+        try {
+            const response = await signupAPI(info);
+            console.log("server response: ", response.data);
 
-        //now login for bearer token.
-        const resp = await loginAPI(info);
-        console.log("token", resp.data);
+            //now login for bearer token.
+            const resp = await loginAPI(info);
+            console.log("token", resp.data);
+
+            localStorage.setItem("token", resp.data.bearerToken);
+            navigate('/main');
+        } catch(err) {
+            console.log(err);
+        }
+          
     }
 
     return (
