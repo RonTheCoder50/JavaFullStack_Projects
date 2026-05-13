@@ -46,14 +46,17 @@ export async function userRegisterAPI(info) {
 }
 
 export async function userLoginAPI(info) {
+    console.log("API:", `${API}/auth/login`);
+    console.log("INFO:", info);
+    
     try {
         const response = await axios.post(`${API}/auth/login`, info);
         if(response.data === "bad404") {
             alert('wrong user-email or password, try again!');
         }
 
-        console.log('token -> ', response.data);
-        return response.data;
+        console.log('token -> ', response?.data);
+        return response?.data;
     } catch(err) {
         console.log("error while login -> ", err);
         

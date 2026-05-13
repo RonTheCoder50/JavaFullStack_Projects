@@ -23,21 +23,25 @@ export default function LoginPage() {
 
     async function handleSubmit() {
         //api calls !
-        const loginToken = await userLoginAPI(); 
-        const userInfo = await userProfileAPI(loginToken, info);
+        try {
+            const loginToken = await userLoginAPI(info); 
+            const userInfo = await userProfileAPI(loginToken, info);
 
-        const userData = {
-            id: userInfo.id,
-            username: userInfo.username,
-            email: userInfo.email,
-            password: userInfo.password,
-            role: userInfo.role    
+            const userData = {
+                id: userInfo.id,
+                username: userInfo.username,
+                email: userInfo.email,
+                password: userInfo.password,
+                role: userInfo.role    
+            }
+
+            console.log("user: ", userData);
+            localStorage.setItem('user', JSON.stringify(userData)); //user info store!
+            localStorage.setItem('token', loginToken); //JWT token store!
+            navigate('/dashboard');
+        } catch(err) {
+            console.log(err);
         }
-
-        console.log("user: ", userData);
-        localStorage.setItem('user', JSON.stringify(userData)); //user info store!
-        localStorage.setItem('token', loginToken); //JWT token store!
-        navigate('/dashboard');
             
         setInfo({
             name: '',

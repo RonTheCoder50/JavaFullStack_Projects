@@ -39,6 +39,8 @@ public class UserService {
         user.setRole(Role.USER);
         user.setJoinDate(now);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println(user.getUsername());
+        System.out.println(user.getPassword());
 
         return repo.save(user);
     }
