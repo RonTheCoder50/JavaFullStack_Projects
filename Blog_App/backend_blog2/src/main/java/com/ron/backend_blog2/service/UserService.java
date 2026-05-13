@@ -2,6 +2,7 @@ package com.ron.backend_blog2.service;
 
 import com.ron.backend_blog2.entity.Users;
 import com.ron.backend_blog2.enums.Role;
+import com.ron.backend_blog2.exceptions.UnAuthorizedException;
 import com.ron.backend_blog2.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,8 @@ public class UserService {
             return repo.findByEmail(user.getEmail());
         } catch(Exception ex) {
             System.err.println(ex.getMessage());
-            return null;
+//            return null;
+            throw new UnAuthorizedException("user not found!");
         }
     }
 
