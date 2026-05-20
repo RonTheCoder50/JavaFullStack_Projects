@@ -1,16 +1,27 @@
 package com.ron.backend.service;
 
+import com.ron.backend.dto.AnalysisResponseDto;
 import com.ron.backend.entity.Analysis;
+import com.ron.backend.entity.UserData;
+import com.ron.backend.entity.UserHistory;
+import com.ron.backend.entity.Users;
 import com.ron.backend.exception.UnSupportedMediaException;
-import com.ron.backend.repository.FileRepository;
+import com.ron.backend.repository.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class analyzeService {
@@ -21,35 +32,182 @@ public class analyzeService {
     @Autowired
     private FileRepository fileRepo;
 
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private UserDataRepository userDataRepo;
+
+    @Autowired
+    private HistoryRepository historyRepo;
+
+    @Autowired
+    private AnalysisRepository analysisRepo;
+
     public String analyzeFile(MultipartFile file) throws UnSupportedMediaException, IOException {
-        String content = "";
-        String type = file.getContentType();
+            Users user = userRepo.findByUsername(getCurrentUser());
+            UserData userData = userDataRepo.findByUserId(user.getId());
 
-        if(type != null && type.equals("text/plain")) { //for Text file.
-            content = new String(file.getBytes());
-        } else if(type != null && type.equals("application/pdf")) { //for PDF file.
-            PDDocument document = PDDocument.load(file.getInputStream());
-            PDFTextStripper stripper = new PDFTextStripper();
+            resetDailyLimit(userData); //to reset daily limits.
+            if(!checkAnalyzeValidity(userData)) { //for checking today's limits
+                throw new RuntimeException("limit exceed!");
+            }
 
-            content = stripper.getText(document);
-            document.close();
-        } else if(type != null && type.equals("application/docx")) { //docx type.
-            XWPFDocument doc = new XWPFDocument(file.getInputStream());
-            XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
-            content = extractor.getText();
+            String content = extractTextFromFile(file);
+            String aiResponse = geminiService.analyzeResume(content); //fetch analysis via ai..
 
-            extractor.close();
-            doc.close();
-        } else {
-            throw new UnSupportedMediaException("Unsupported file type");
-        }
+            updateUserDataTable(userData); //update userInfo..
+            savedAnalysisData(file, aiResponse); //saved resume to DB.
 
-        return geminiService.analyzeResume(content);
+            return aiResponse; //return response to Frontend.
     }
 
     //saved data of analysis
-    public String savedAnalysisData(Analysis analysis) {
-        fileRepo.save(analysis);
-        return "analysis saved successfully!";
+    public void savedAnalysisData(MultipartFile file, String aiResponse) {
+        try {
+            Users user = userRepo.findByUsername(getCurrentUser());
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(aiResponse).get("ats_score");
+            int ats = root != null ? root.asInt() : 0;
+
+            Analysis analysis = new Analysis();
+            analysis.setFilename(file.getOriginalFilename());
+            analysis.setContent(aiResponse);
+            analysis.setDate(LocalDateTime.now());
+            analysis.setAts(ats);
+            analysis.setUser(user);
+
+            updateUserHistoryTable(analysis); //add to history!
+            fileRepo.save(analysis); //save analysis to DB.
+        } catch(RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private String extractTextFromFile(MultipartFile file) throws IOException {
+        String type = file.getContentType();
+
+        if (type == null || type.isBlank()) {
+            throw new UnSupportedMediaException(
+                    "File type is missing"
+            );
+        }
+
+        return switch (type) {
+
+            // TXT
+            case "text/plain" ->
+                    new String(file.getBytes());
+
+            // PDF
+            case "application/pdf" -> {
+
+                try (PDDocument document =
+                             PDDocument.load(file.getInputStream())) {
+
+                    PDFTextStripper stripper =
+                            new PDFTextStripper();
+
+                    yield stripper.getText(document);
+                }
+            }
+
+            // DOCX
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> {
+
+                try (XWPFDocument document =
+                             new XWPFDocument(file.getInputStream());
+
+                     XWPFWordExtractor extractor =
+                             new XWPFWordExtractor(document)) {
+
+                    yield extractor.getText();
+                }
+            }
+
+            default ->
+                    throw new UnSupportedMediaException(
+                            "Unsupported file type: " + type
+                    );
+        };
+    }
+
+    public AnalysisResponseDto getAnalysis(Long userId, String filename) {
+        try {
+            Analysis analysis = fileRepo.findByFilenameAndUserId(filename, userId);
+            if(analysis != null){
+                AnalysisResponseDto dto = new AnalysisResponseDto();
+                dto.setUserId(userId);
+                dto.setId(analysis.getId());
+                dto.setContent(analysis.getContent());
+                dto.setFilename(analysis.getFilename());
+                dto.setDate(analysis.getDate());
+
+                updateUserDataTable(userDataRepo.findByUserId(userId));
+                return dto;
+            } else {
+                return null;
+            }
+        } catch(Exception e){
+            throw new RuntimeException("something went wrong" + e.getMessage());
+        }
+    }
+
+    public String getCurrentUser() {
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        if(auth == null) {
+            throw new RuntimeException("login failed!");
+        }
+
+        return auth.getName();
+    }
+
+    public long getLimitByPlan(String plan) {
+        return switch(plan) {
+            case "PRO" -> 200;
+            case "PRO_PLUS" -> 1000;
+            default -> 5;
+        };
+    }
+
+    public void resetDailyLimit(UserData userData) {
+        if(userData != null && !userData.getLastResetDate().equals(LocalDate.now())) {
+            userData.setRemainingLimit(
+                    getLimitByPlan(userData.getPlan())
+            );
+            userData.setLastResetDate(LocalDate.now());
+        }
+    }
+
+    public boolean checkAnalyzeValidity(UserData userData) {
+        if(userData != null) {
+            return userData.getRemainingLimit() > 0;
+        }
+
+        throw new RuntimeException("user_data is null");
+    }
+
+    public void updateUserDataTable(UserData userData) {
+        Long userId = userRepo.findByUsername(getCurrentUser()).getId();
+        userData.setAvgAtsScore(analysisRepo.getAverageAtsScore(userId)); //avg_ats_score
+        userData.setRemainingLimit(userData.getRemainingLimit() - 1); //limit--
+        userData.setTotalAnalysis(userData.getTotalAnalysis() + 1); //analysis++
+        userDataRepo.save(userData);
+    }
+
+    public void updateUserHistoryTable(Analysis analysis) {
+        Users user = userRepo.findByUsername(getCurrentUser());
+        UserHistory uHistory = new UserHistory();
+
+        uHistory.setFileName(analysis.getFilename());
+        uHistory.setDate(LocalDate.now());
+        uHistory.setAts(analysis.getAts());
+        uHistory.setUser(user);
+
+        historyRepo.save(uHistory);
     }
 }

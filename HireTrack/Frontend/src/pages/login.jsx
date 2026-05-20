@@ -27,17 +27,26 @@ export default function LoginPage() {
     
     async function handleSubmit(e) {
         e.preventDefault();
+        if(info.username.trim().length === 0 || 
+            info.password.trim().length === 0
+        ) {
+            alert(`enter creaditials first!`);
+            return;
+        } 
+        
         try {
             const response = await loginAPI(info);
             localStorage.setItem("token", response?.data?.bearerToken);  
+            localStorage.setItem("user", JSON.stringify(response.data));
 
             console.log("server response: ", response === undefined 
                 ? 'no response | request failed' 
-                : response.data
+                : response?.data
             );
             navigate('/main');
         } catch(err) {
-            console.log(err);
+            console.log(err.response?.data);
+            alert('Invalid Username or password!');
         }
     }
 

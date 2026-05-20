@@ -15,7 +15,7 @@ public class ResponseLoginDto {
     private Long id;
     private String username;
     private List<String> roles;
-    private List<Analysis> analyses;
+    private List<AnalysisDto> analyses;
 
     private LocalDateTime dateTime;
     private String bearerToken;

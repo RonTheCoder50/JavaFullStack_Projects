@@ -1,6 +1,6 @@
 package com.ron.backend.controller;
 
-import com.ron.backend.entity.Analysis;
+import com.ron.backend.dto.AnalysisResponseDto;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.service.analyzeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,16 @@ public class analyzeController {
         return ResponseEntity.status(200).body(service.analyzeFile(file));
     }
 
-    //saved analysis in DB -> (POST)
-    @PostMapping("/saved")
-    public ResponseEntity<?> savedAnalysis(Analysis analysis) {
-        return ResponseEntity.status(200).body(service.savedAnalysisData(analysis));
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAnalysis(
+            @PathVariable Long id,
+            @RequestParam String filename
+    ) {
+        AnalysisResponseDto dto = service.getAnalysis(id, filename);
+        if (dto == null) {
+            return ResponseEntity.status(404).body(null);
+        }
+
+        return ResponseEntity.status(200).body(dto);
     }
-
-    //get all analysis -> same userID total analyze resume data! (GET)
-
-    //clear all analysis -> remove all data (DELETE)
 }

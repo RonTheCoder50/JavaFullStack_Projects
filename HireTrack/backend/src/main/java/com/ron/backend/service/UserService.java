@@ -1,12 +1,13 @@
 package com.ron.backend.service;
 
-import com.ron.backend.dto.AnalysisDto;
-import com.ron.backend.dto.RequestLoginDto;
-import com.ron.backend.dto.ResponseLoginDto;
-import com.ron.backend.dto.UserDto;
+import com.ron.backend.dto.*;
 import com.ron.backend.entity.Analysis;
+import com.ron.backend.entity.UserData;
+import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
 import com.ron.backend.exception.UserNotFoundException;
+import com.ron.backend.repository.HistoryRepository;
+import com.ron.backend.repository.UserDataRepository;
 import com.ron.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ron.backend.service.analyzeService;
+
 @Service
 public class UserService {
     @Autowired
@@ -37,17 +40,36 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserDataRepository userDataRepo;
+
+    @Autowired
+    private HistoryRepository historyRepo;
+
     //sign-up
     public ResponseEntity<String> signup(Users user) {
         Users us = userRepo.findByUsername(user.getUsername());
-        System.out.println(us.getUsername() + " " + us.getPassword());
+        if (us == null) {
+            user.setDateOfJoining(LocalDate.now());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(new ArrayList<>());
+            user.addRole("ROLE_USER");
+            userRepo.save(user);
 
-        user.setDateOfJoining(LocalDate.now());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(new ArrayList<>());
-        user.addRole("ROLE_USER");
-        userRepo.save(user);
-        return ResponseEntity.ok("user added successfully!");
+            //now store user_data ->>
+            UserData userData = new UserData();
+            userData.setUser(user);
+            userData.setPlan("FREE");
+            userData.setRemainingLimit(5L);
+            userData.setLastResetDate(LocalDate.now());
+            userData.setTotalAnalysis(0L);
+            userData.setAvgAtsScore(0.0);
+            userDataRepo.save(userData);
+
+            return ResponseEntity.ok("user added successfully!");
+        }
+
+        return ResponseEntity.status(201).body("user already exists! \n now redirecting to login!");
     }
 
     public ResponseLoginDto login(RequestLoginDto user) {
@@ -64,9 +86,14 @@ public class UserService {
             ResponseLoginDto response = new ResponseLoginDto();
             response.setId(us.getId());
             response.setUsername(user.getUsername());
-            response.setAnalyses(us.getAnalyses());
             response.setDateTime(LocalDateTime.now());
             response.setBearerToken(jwtService.generateToken(user.getUsername()));
+
+            List<AnalysisDto> list = new ArrayList<>();
+            for(Analysis analysis : us.getAnalyses()) {
+                list.add(new AnalysisDto(analysis.getId(), analysis.getContent()));
+            }
+            response.setAnalyses(list);
 
             if(!us.getRoles().isEmpty()) {
                 List<String> roles = new ArrayList<>(us.getRoles());
@@ -91,12 +118,9 @@ public class UserService {
         userDto.setUsername(user.getUsername());
 
         List<AnalysisDto> list = new ArrayList<>();
-        for(Analysis as : user.getAnalyses()){
-            AnalysisDto aDto = new AnalysisDto();
-            aDto.setId(as.getId());
-            aDto.setContent(as.getContent());
-            list.add(aDto);
-        }
+        user.getAnalyses().forEach(a -> {
+            list.add(new AnalysisDto(a.getId(), a.getContent()));
+        });
 
         userDto.setAnalyses(list);
         return userDto;
@@ -106,4 +130,41 @@ public class UserService {
         userRepo.deleteById(id);
         return "user deleted successfully";
     }
+
+    public ResponseEntity<?> getUserData() {
+        analyzeService analyzeService = new analyzeService();
+        Users user = userRepo.findByUsername(analyzeService.getCurrentUser());
+        //limit, totalAnalysis, avgAts, plan, history recent 4,5 history.
+
+        UserData userData = userDataRepo.findByUserId(user.getId());
+        Long limit = userData.getRemainingLimit();
+        Long totalAnalysis = userData.getTotalAnalysis();
+        Double avgAtsScore = userData.getAvgAtsScore();
+        String plan = userData.getPlan();
+
+        List<UserHistory> userRecentFiveActivities =
+                historyRepo.findTop5ByUserIdOrderByDateDesc(user.getId());
+
+        //user other info.
+        UserDataResponseDto response = new UserDataResponseDto();
+        response.setPlan(plan);
+        response.setTotalAnalysis(totalAnalysis);
+        response.setLimit(limit);
+        response.setAvgAtsScore(avgAtsScore);
+
+        //recent top 5 analysis.
+        List<HistoryResponseDto> recentActivity = new ArrayList<>();
+        userRecentFiveActivities.forEach(userHistory -> {
+            HistoryResponseDto hDto = new HistoryResponseDto();
+            hDto.setDate(userHistory.getDate());
+            hDto.setFileName(userHistory.getFileName());
+            hDto.setAvgAtsScore(userHistory.getAts());
+
+            recentActivity.add(hDto);
+        });
+        response.setAnalysisHistory(recentActivity);
+
+        return ResponseEntity.status(200).body(response);
+    }
+
 }

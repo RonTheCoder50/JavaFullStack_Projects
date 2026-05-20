@@ -1,3 +1,137 @@
-export default function DashBoardPage() {
-    return <h1>dashboard...</h1>
+import FileUploadBox from "@/components-project/fileuploadbox";
+import HistoryTable from "@/components-project/historytable";
+import HeroCard from "@/components-project/herocard";
+import { useEffect, useState } from "react";
+
+import { TailSpin } from "react-loader-spinner";
+import { getUserDataAPI } from "@/API";
+
+export default function DashBoardPage({ user }) {
+    const [data, setData] = useState(null); //userData!
+    const [loading, setLoading] = useState(false); 
+
+    function handleLoading() {
+        setLoading(!loading);
+    }
+    
+    // user dashboard
+    //fetch user data - {name, personal info: overall usage data, plan tier}
+
+    useEffect(() => {
+        async function fetchUserData() {
+            const resp = await getUserDataAPI();
+            setData(resp);
+
+            console.log('userData: ', resp);
+        }
+
+        fetchUserData();
+    }, []);
+
+    return (
+        <section className={`
+            min-h-screen w-full 
+            flex flex-col 
+            my-4 gap-16
+        `}>
+            {/* heading */}
+            <div className="flex flex-col gap-2 my-3 mx-auto">
+                <h1 className={`poppins-medium text-xl md:text-2xl xl:text-4xl text-center`}>
+                    Welcome Back, {user?.username} 👋
+                </h1>
+                <p className={`poppins-regular-italic text-xs sm:text-sm md:text-base text-gray-600`}>
+                    Improve your resume ATS Score & Track your progress.
+                </p>
+            </div>
+
+            {/* Hero-sec boxes */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-8 gap-6 place-items-center p-4">
+                <HeroCard 
+                    name={'Total Resumes Analyzed'} 
+                    value={data?.totalAnalysis || 0}
+                />
+
+                <HeroCard 
+                    name={'Average ATS Score'} 
+                    value={data?.avgAtsScore || 0}
+                />
+
+                <HeroCard 
+                    name={'Analyzed Usage Left'} 
+                    value={data?.limit + '/5' || '5/5'}
+                />
+
+                <HeroCard 
+                    name={'Current Plan'} 
+                    value={data?.plan?.toLowerCase() + ' tier' || 'Free Tier'}
+                />
+            </div>
+
+            {/* input box */}
+            <div className="my-4 flex flex-col gap-6">
+                <TailSpin
+                    height="80"
+                    width="80"
+                    color="gray"
+                    ariaLabel="tail-spin-loading"
+                    visible={loading}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                />
+                <h1 className="text-center underline underline-offset-2 text-base sm:text-lg tracking-wide font-normal decoration-sky-200">
+                    Analyzed Your Resume by uploading file here.
+                </h1>
+                
+                <FileUploadBox 
+                    setLoading={() => handleLoading()}
+                />
+            </div>
+
+            {/* History table */}
+            <div className="my-4 flex flex-col gap-4">
+                <h1 className="p-4 ml-3 sm:ml-6 text-base md:text-xl underline underline-offset-2 decoration-sky-300">
+                    Recent Activity
+                </h1>
+                
+                <HistoryTable
+                    data={data?.analysisHistory}
+                />
+            </div>
+
+            <footer className="mt-16 border-t border-gray-200 py-6">
+                <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    
+                    <div>
+                        <h2 className="text-sm font-medium text-gray-700">
+                            HireTrack
+                        </h2>
+
+                        <p className="text-sm text-gray-500 mt-1">
+                            Improve your resume with AI-powered ATS analysis.
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-5 text-sm text-gray-500">
+                        <a href="#" className="hover:text-sky-500 transition">
+                            About
+                        </a>
+
+                        <a href="#" className="hover:text-sky-500 transition">
+                            Privacy
+                        </a>
+
+                        <a href="#" className="hover:text-sky-500 transition">
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </footer>
+        </section>
+    );
+
+    //Admin dashboard
+    // overall user info
+
+    //Moderator dashboard
+    //overall user + payment & history + overall controll.
 }
+

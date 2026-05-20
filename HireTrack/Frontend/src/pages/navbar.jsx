@@ -15,7 +15,7 @@ import {
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaRegUser } from "react-icons/fa6";
 
-export default function NavbarPage({ status }) {
+export default function NavbarPage({ user, status }) {
     const [theme, setTheme] = useState('light');
     const [sideToggle, isSideToggle] = useState(false);
 
@@ -71,14 +71,14 @@ export default function NavbarPage({ status }) {
                         <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
                             <FaRegUser />
                             <span className="text-base tracking-wide font-normal">
-                                Profile
+                                Profile 
                             </span>
                         </div>
 
                         <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
                             {theme === 'light'
                                 ? <MdOutlineWbSunny />
-                                : <MdOutlineClear />
+                                : <FiMoon />
                             }
                             <span className="text-base tracking-wide font-normal">
                                 {theme === 'light' ? 'Light' : 'Dark'}
@@ -112,8 +112,8 @@ export default function NavbarPage({ status }) {
             </div>
             
             <div className="flex items-center gap-4 lg:gap:6 xl:gap-10 text-sm md:text-base">
-                <span className="w-8 h-8 flex justify-center items-center rounded-full border">
-                    R
+                <span className="w-8 h-8 flex justify-center items-center rounded-full border hover:shadow-sm cursor-default hover:border-sky-400">
+                    {user?.username.charAt(0)}
                 </span>
 
                 <div 

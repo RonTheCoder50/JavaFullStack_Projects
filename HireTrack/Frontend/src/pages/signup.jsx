@@ -37,13 +37,14 @@ export default function SignupPage() {
         e.preventDefault();
         try {
             const response = await signupAPI(info);
-            console.log("server response: ", response.data);
+            console.log("server response: ", response?.data);
 
             //now login for bearer token.
             const resp = await loginAPI(info);
-            console.log("token", resp.data);
+            console.log("token", resp?.data);
 
-            localStorage.setItem("token", resp.data.bearerToken);
+            localStorage.setItem("token", resp?.data?.bearerToken);
+            localStorage.setItem("user", JSON.stringify(resp?.data));
             navigate('/main');
         } catch(err) {
             console.log(err);

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,4 +27,10 @@ public class Users {
 
     @OneToMany(mappedBy = "user")
     private List<Analysis> analyses;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserData userData;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserHistory> history;
 }
