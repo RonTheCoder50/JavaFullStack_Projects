@@ -1,12 +1,22 @@
 package com.ron.backend.repository;
 
 import com.ron.backend.entity.UserHistory;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface HistoryRepository extends JpaRepository<UserHistory, Integer> {
-    List<UserHistory> findTop5ByUserIdOrderByDateDesc(Long userId);
+    List<UserHistory> findTop5ByUser_IdOrderByDateDesc(Long userId);
+    List<UserHistory> findByUser_IdOrderByDateDesc(Long userId);
+
+    @Modifying
+    @Transactional
+    void deleteByUser_IdAndFileName(Long userId, String fileName);
+
+    UserHistory findByUser_IdAndFileName(Long userId, String fileName);
 }

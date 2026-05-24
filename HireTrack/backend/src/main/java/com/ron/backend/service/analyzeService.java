@@ -5,8 +5,10 @@ import com.ron.backend.entity.Analysis;
 import com.ron.backend.entity.UserData;
 import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
+import com.ron.backend.exception.LimitExceedException;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.repository.*;
+import jakarta.transaction.Transactional;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
@@ -30,9 +32,6 @@ public class analyzeService {
     private GeminiService geminiService;
 
     @Autowired
-    private FileRepository fileRepo;
-
-    @Autowired
     private UserRepository userRepo;
 
     @Autowired
@@ -45,20 +44,14 @@ public class analyzeService {
     private AnalysisRepository analysisRepo;
 
     public String analyzeFile(MultipartFile file) throws UnSupportedMediaException, IOException {
-            Users user = userRepo.findByUsername(getCurrentUser());
-            UserData userData = userDataRepo.findByUserId(user.getId());
-
-            resetDailyLimit(userData); //to reset daily limits.
-            if(!checkAnalyzeValidity(userData)) { //for checking today's limits
-                throw new RuntimeException("limit exceed!");
+            if(checkValidity()) { //for checking today's limits
+                throw new LimitExceedException("limit exceeded!");
             }
 
             String content = extractTextFromFile(file);
             String aiResponse = geminiService.analyzeResume(content); //fetch analysis via ai..
 
-            updateUserDataTable(userData); //update userInfo..
             savedAnalysisData(file, aiResponse); //saved resume to DB.
-
             return aiResponse; //return response to Frontend.
     }
 
@@ -66,10 +59,7 @@ public class analyzeService {
     public void savedAnalysisData(MultipartFile file, String aiResponse) {
         try {
             Users user = userRepo.findByUsername(getCurrentUser());
-
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(aiResponse).get("ats_score");
-            int ats = root != null ? root.asInt() : 0;
+            int ats = extractAtsFromAiResponse(aiResponse);
 
             Analysis analysis = new Analysis();
             analysis.setFilename(file.getOriginalFilename());
@@ -78,8 +68,9 @@ public class analyzeService {
             analysis.setAts(ats);
             analysis.setUser(user);
 
+            updateUserDataTable();
             updateUserHistoryTable(analysis); //add to history!
-            fileRepo.save(analysis); //save analysis to DB.
+            analysisRepo.save(analysis); //save analysis to DB.
         } catch(RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -133,18 +124,30 @@ public class analyzeService {
         };
     }
 
-    public AnalysisResponseDto getAnalysis(Long userId, String filename) {
+    private int extractAtsFromAiResponse(String aiResponse) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(aiResponse).get("ats_score");
+        return root != null ? root.asInt() : 0;
+    }
+
+    public AnalysisResponseDto getAnalysis(String filename) {
         try {
-            Analysis analysis = fileRepo.findByFilenameAndUserId(filename, userId);
+            Users user = userRepo.findByUsername(getCurrentUser());
+            Long userId = user.getId();
+
+            if(checkValidity()) { //for checking today's limits
+                throw new LimitExceedException("limit exceeded!");
+            }
+
+            Analysis analysis = analysisRepo.findByFilenameAndUserId(filename, userId);
             if(analysis != null){
                 AnalysisResponseDto dto = new AnalysisResponseDto();
-                dto.setUserId(userId);
-                dto.setId(analysis.getId());
                 dto.setContent(analysis.getContent());
                 dto.setFilename(analysis.getFilename());
                 dto.setDate(analysis.getDate());
 
-                updateUserDataTable(userDataRepo.findByUserId(userId));
+                updateUserDataTable();
+                updateUserHistoryTable(analysis);
                 return dto;
             } else {
                 return null;
@@ -183,20 +186,29 @@ public class analyzeService {
         }
     }
 
-    public boolean checkAnalyzeValidity(UserData userData) {
+    public boolean checkValidity() {
+        Users user = userRepo.findByUsername(getCurrentUser());
+        UserData userData = userDataRepo.findByUserId(user.getId());
+        resetDailyLimit(userData);
+
         if(userData != null) {
-            return userData.getRemainingLimit() > 0;
+            return userData.getRemainingLimit() <= 0;
         }
 
         throw new RuntimeException("user_data is null");
     }
 
-    public void updateUserDataTable(UserData userData) {
+    public void updateUserDataTable() {
+        Users user = userRepo.findByUsername(getCurrentUser());
+        UserData userData = userDataRepo.findByUserId(user.getId());
         Long userId = userRepo.findByUsername(getCurrentUser()).getId();
-        userData.setAvgAtsScore(analysisRepo.getAverageAtsScore(userId)); //avg_ats_score
-        userData.setRemainingLimit(userData.getRemainingLimit() - 1); //limit--
-        userData.setTotalAnalysis(userData.getTotalAnalysis() + 1); //analysis++
-        userDataRepo.save(userData);
+
+        if(userData.getRemainingLimit() > 0) {
+            userData.setAvgAtsScore(analysisRepo.getAverageAtsScore(userId)); //avg_ats_score
+            userData.setRemainingLimit(userData.getRemainingLimit() - 1); //limit--
+            userData.setTotalAnalysis(userData.getTotalAnalysis() + 1); //analysis++
+            userDataRepo.save(userData);
+        }
     }
 
     public void updateUserHistoryTable(Analysis analysis) {
@@ -209,5 +221,46 @@ public class analyzeService {
         uHistory.setUser(user);
 
         historyRepo.save(uHistory);
+    }
+
+    public AnalysisResponseDto viewRecentAnalysis(String filename) {
+        try {
+            Users user =  userRepo.findByUsername(getCurrentUser());
+            Analysis analysis = analysisRepo.findByFilenameAndUserId(filename, user.getId());
+
+            if(analysis != null){
+                AnalysisResponseDto dto = new AnalysisResponseDto();
+                dto.setContent(analysis.getContent());
+                dto.setFilename(analysis.getFilename());
+                dto.setDate(analysis.getDate());
+                return dto;
+            } else {
+                return null;
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("something went wrong" + e.getMessage());
+        }
+    }
+
+    public String removeHistoryAnalysis(String filename) {
+        try {
+            Users user = userRepo.findByUsername(getCurrentUser());
+            historyRepo.deleteByUser_IdAndFileName( //remove it.
+                    user.getId(),
+                    filename
+            );
+
+            UserHistory uHistory = historyRepo.findByUser_IdAndFileName( //check it is still exist.
+                    user.getId(), filename
+            );
+
+            if(uHistory == null){
+                return "recent analysis deleted successfully!";
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("something went wrong" + e.getMessage());
+        }
+
+        return "failed to removed analysis!";
     }
 }

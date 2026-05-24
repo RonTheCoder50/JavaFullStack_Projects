@@ -1,32 +1,122 @@
 import FileUploadBox from "@/components-project/fileuploadbox";
-import HistoryTable from "@/components-project/historytable";
+import { HistoryTable, UserInfoTable } from "@/components-project/tables";
 import HeroCard from "@/components-project/herocard";
 import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
-import { getUserDataAPI } from "@/API";
+import { fetchAdminDataAPI, getUserDataAPI } from "@/API";
 
-export default function DashBoardPage({ user }) {
+import { 
+    DashboardUserGrowthChart,
+    DashboardAnalysisChart,
+    DashboardDonutChart
+} from "@/components-project/charts";
+
+export default function DashBoardPage() {
     const [data, setData] = useState(null); //userData!
+    const [adminData, setAdminData] = useState(null);
+
     const [loading, setLoading] = useState(false); 
+    const user = JSON.parse(localStorage.getItem("user"));
 
     function handleLoading() {
         setLoading(!loading);
     }
-    
-    // user dashboard
-    //fetch user data - {name, personal info: overall usage data, plan tier}
 
-    useEffect(() => {
-        async function fetchUserData() {
+    async function fetchUserData() {
+        try {
+            setLoading(true);
+
             const resp = await getUserDataAPI();
+            console.log('user data:', resp);
             setData(resp);
 
-            console.log('userData: ', resp);
+        } catch(err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
         }
+    }
 
+    async function fetchAdminData() {
+        const response = await fetchAdminDataAPI();
+        if(response) {
+            setAdminData(response);
+            console.log('admin data: ', response);
+        } else {
+            alert('failed to fetch user count!');
+        }
+    }
+
+    useEffect(() => {
         fetchUserData();
     }, []);
+
+    useEffect(() => {
+        fetchAdminData();
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('block', data?.isBlock
+            ? true
+            : false
+        );
+    }, [data]);
+
+    function handleRefresh() {
+        fetchAdminData();
+    }
+
+    //Admin dashboard
+    // overall user info
+    if(user.roles.includes('ROLE_ADMIN')) {
+        return (
+            <section 
+                className={`
+                    w-full
+                    min-h-screen 
+                    flex 
+                    flex-col 
+                    items-center
+                    gap-16
+                `}
+            >
+                <h1 className={`poppins-medium text-xl md:text-2xl xl:text-4xl text-center`}>
+                    Hello, {user?.username} 👋
+                </h1>
+
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-8 gap-6 place-items-center p-4">
+                    <HeroCard
+                        name={'Total Users'}
+                        value={adminData?.totalUsers || 0}
+                    />
+
+                    <HeroCard
+                        name={'Total Analyses'}
+                        value={adminData?.totalAnalyses || 0}
+                    />
+
+                    <HeroCard
+                        name={'Todays Analyses'}
+                        value={adminData?.todayAnalyses || 0}
+                    />
+
+                    <HeroCard
+                        name={'Average ATS Score'}
+                        value={adminData?.avgAtsScore.toFixed(2) || 0}
+                    />
+                </div>
+                
+                <DashboardUserGrowthChart />
+
+                <DashboardAnalysisChart />
+
+                <DashboardDonutChart data={adminData?.planData} />
+
+                <UserInfoTable refresh={() => handleRefresh()} data={adminData?.userDataList} />
+            </section>
+        );
+    }    
 
     return (
         <section className={`
@@ -53,7 +143,7 @@ export default function DashBoardPage({ user }) {
 
                 <HeroCard 
                     name={'Average ATS Score'} 
-                    value={data?.avgAtsScore || 0}
+                    value={Number(data?.avgAtsScore.toFixed(2)) || 0}
                 />
 
                 <HeroCard 
@@ -94,6 +184,7 @@ export default function DashBoardPage({ user }) {
                 
                 <HistoryTable
                     data={data?.analysisHistory}
+                    refresh={fetchUserData}
                 />
             </div>
 
@@ -128,8 +219,6 @@ export default function DashBoardPage({ user }) {
         </section>
     );
 
-    //Admin dashboard
-    // overall user info
 
     //Moderator dashboard
     //overall user + payment & history + overall controll.

@@ -20,6 +20,7 @@ public class UserData {
     @JoinColumn(name = "user_id")
     private Users user;
 
+    private Boolean block;
     private String plan;
     private Long remainingLimit;
     private LocalDate lastResetDate;

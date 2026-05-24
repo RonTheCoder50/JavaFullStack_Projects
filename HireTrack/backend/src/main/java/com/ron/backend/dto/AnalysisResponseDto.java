@@ -9,8 +9,6 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class AnalysisResponseDto {
-    private Long id;
-    private Long userId;
     private String filename;
     private LocalDateTime date;
 

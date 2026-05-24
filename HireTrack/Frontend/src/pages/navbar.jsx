@@ -15,9 +15,10 @@ import {
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaRegUser } from "react-icons/fa6";
 
-export default function NavbarPage({ user, status }) {
+export default function NavbarPage({ status, handleStatus }) {
     const [theme, setTheme] = useState('light');
     const [sideToggle, isSideToggle] = useState(false);
+    const user = JSON.parse(localStorage.getItem('user'));
 
     function toggleSideBar() {
         isSideToggle(!sideToggle);
@@ -47,35 +48,39 @@ export default function NavbarPage({ user, status }) {
                     />
 
                     <div className="flex flex-col items-center gap-2 md:gap-8 lg:gap-12 xl:gap-14">
-                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
+                        <div onClick={() => handleStatus('dashboard')} 
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
                             <MdOutlineDashboard />
                             <span>
                                 Dashboard
                             </span>
                         </div>
 
-                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
+                        <div onClick={() => handleStatus('history')}  
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
                             <MdOutlineHistory />
                             <span className="text-base tracking-wide font-normal">
                                 History
                             </span>
                         </div>
 
-                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
+                        <div onClick={() => handleStatus('pricing')} 
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
                             <MdOutlinePriceCheck />
                             <span className="text-base tracking-wide font-normal">
                                 Pricing
                             </span>
                         </div>
 
-                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
+                        <div onClick={() => handleStatus('profile')} 
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
                             <FaRegUser />
                             <span className="text-base tracking-wide font-normal">
                                 Profile 
                             </span>
                         </div>
 
-                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:scale-101 flex items-center gap-2">
+                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
                             {theme === 'light'
                                 ? <MdOutlineWbSunny />
                                 : <FiMoon />
@@ -94,7 +99,8 @@ export default function NavbarPage({ user, status }) {
                 HireTrack
             </h1>
 
-            <div className="flex items-center gap-6 md:gap-8 lg:gap-12 xl:gap-14">
+            <div onClick={(e) => handleStatus(e.target.value)} 
+                className="flex items-center gap-6 md:gap-8 lg:gap-12 xl:gap-14">
                 <NavBox
                     value={'Dashboard'}
                     status={status}
@@ -133,7 +139,9 @@ export default function NavbarPage({ user, status }) {
 
 function NavBox({ value, status }) {
     return (
-        <span className={`
+        <button
+            value={value.toLowerCase()}
+            className={`
             ${status === value.toLowerCase() ? 'bg-sky-200/90' : 'bg-white'}
             hover:shadow-sm
           shadow-sky-400
@@ -149,6 +157,6 @@ function NavBox({ value, status }) {
         `}
         >
             {value}
-        </span>
+        </button>
     );
 }

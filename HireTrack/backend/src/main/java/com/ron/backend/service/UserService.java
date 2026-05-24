@@ -6,6 +6,7 @@ import com.ron.backend.entity.UserData;
 import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
 import com.ron.backend.exception.UserNotFoundException;
+import com.ron.backend.repository.AnalysisRepository;
 import com.ron.backend.repository.HistoryRepository;
 import com.ron.backend.repository.UserDataRepository;
 import com.ron.backend.repository.UserRepository;
@@ -46,6 +47,9 @@ public class UserService {
     @Autowired
     private HistoryRepository historyRepo;
 
+    @Autowired
+    private analyzeService aService;
+
     //sign-up
     public ResponseEntity<String> signup(Users user) {
         Users us = userRepo.findByUsername(user.getUsername());
@@ -64,6 +68,7 @@ public class UserService {
             userData.setLastResetDate(LocalDate.now());
             userData.setTotalAnalysis(0L);
             userData.setAvgAtsScore(0.0);
+            userData.setBlock(false);
             userDataRepo.save(userData);
 
             return ResponseEntity.ok("user added successfully!");
@@ -132,18 +137,19 @@ public class UserService {
     }
 
     public ResponseEntity<?> getUserData() {
-        analyzeService analyzeService = new analyzeService();
-        Users user = userRepo.findByUsername(analyzeService.getCurrentUser());
+        Users user = userRepo.findByUsername(aService.getCurrentUser());
         //limit, totalAnalysis, avgAts, plan, history recent 4,5 history.
 
         UserData userData = userDataRepo.findByUserId(user.getId());
+        aService.resetDailyLimit(userData); //reset daily limit if changed!
+
         Long limit = userData.getRemainingLimit();
         Long totalAnalysis = userData.getTotalAnalysis();
         Double avgAtsScore = userData.getAvgAtsScore();
         String plan = userData.getPlan();
 
         List<UserHistory> userRecentFiveActivities =
-                historyRepo.findTop5ByUserIdOrderByDateDesc(user.getId());
+                historyRepo.findTop5ByUser_IdOrderByDateDesc(user.getId());
 
         //user other info.
         UserDataResponseDto response = new UserDataResponseDto();
@@ -151,6 +157,7 @@ public class UserService {
         response.setTotalAnalysis(totalAnalysis);
         response.setLimit(limit);
         response.setAvgAtsScore(avgAtsScore);
+        response.setIsBlock(userData.getBlock());
 
         //recent top 5 analysis.
         List<HistoryResponseDto> recentActivity = new ArrayList<>();
@@ -165,6 +172,23 @@ public class UserService {
         response.setAnalysisHistory(recentActivity);
 
         return ResponseEntity.status(200).body(response);
+    }
+
+    public List<HistoryResponseDto> getHistory() {
+        Users user = userRepo.findByUsername(aService.getCurrentUser());
+        List<UserHistory> history = historyRepo.findByUser_IdOrderByDateDesc(user.getId());
+
+        List<HistoryResponseDto> recentActivity = new ArrayList<>();
+        history.forEach(userHistory -> {
+            HistoryResponseDto hDto = new HistoryResponseDto();
+            hDto.setDate(userHistory.getDate());
+            hDto.setFileName(userHistory.getFileName());
+            hDto.setAvgAtsScore(userHistory.getAts());
+
+            recentActivity.add(hDto);
+        });
+
+        return recentActivity;
     }
 
 }

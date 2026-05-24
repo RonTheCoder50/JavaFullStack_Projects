@@ -14,4 +14,5 @@ public class UserDataResponseDto {
     private Double avgAtsScore;
 
     private List<HistoryResponseDto> analysisHistory;
+    private Boolean isBlock;
 }

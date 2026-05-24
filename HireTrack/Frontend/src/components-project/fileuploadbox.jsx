@@ -27,15 +27,12 @@ export default function FileUploadBox({ setLoading }) {
   };
 
  
-  async function analyzeApiCall(file) { 
-    const user = JSON.parse(localStorage.getItem('user'));
-    
+  async function analyzeApiCall(file) {
     try {
       //1. check catched in db is exist?
       setLoading();  //loading enable..
-     
       
-      const analysis = await getStoreAnalyzedAPI(user?.id, file?.name);
+      const analysis = await getStoreAnalyzedAPI(file?.name);
       if(analysis) {
         console.log("db cache response:", analysis);
         navigate(
@@ -49,7 +46,6 @@ export default function FileUploadBox({ setLoading }) {
           }
         );
         
-        setLoading();  //disable.
         return;
       }
 
@@ -57,7 +53,7 @@ export default function FileUploadBox({ setLoading }) {
       const response = await analyzedResumeAPI(file);
       console.log('anlysis response: ', response);
 
-      if(response !== null) {
+      if(response !== null && response !== undefined) {
         navigate(
           '/analysis-output',
           {
@@ -69,11 +65,15 @@ export default function FileUploadBox({ setLoading }) {
         );
       }
 
-      setLoading(); //disable..
+      setLoading();
     } catch(e) {
-      alert(`something went wrong!`);
+      alert(`Limit Exceed!`);
+      setLoading();
       console.log(e);
     }
+
+    setSelectedFile(null);
+    setFileName('');
   }
 
   return (

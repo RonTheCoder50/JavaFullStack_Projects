@@ -21,16 +21,25 @@ public class analyzeController {
         return ResponseEntity.status(200).body(service.analyzeFile(file));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get")
     public ResponseEntity<?> getAnalysis(
-            @PathVariable Long id,
             @RequestParam String filename
     ) {
-        AnalysisResponseDto dto = service.getAnalysis(id, filename);
+        AnalysisResponseDto dto = service.getAnalysis(filename);
         if (dto == null) {
             return ResponseEntity.status(404).body(null);
         }
 
         return ResponseEntity.status(200).body(dto);
+    }
+
+    @GetMapping("/view/{filename}")
+    public ResponseEntity<?> viewAnalysis(@PathVariable String filename) {
+        return ResponseEntity.status(200).body(service.viewRecentAnalysis(filename));
+    }
+
+    @DeleteMapping("/remove/{filename}")
+    public ResponseEntity<?> removeAnalysis(@PathVariable String filename) {
+        return ResponseEntity.status(200).body(service.removeHistoryAnalysis(filename));
     }
 }

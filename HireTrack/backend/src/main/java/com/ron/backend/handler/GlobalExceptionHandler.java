@@ -1,5 +1,6 @@
 package com.ron.backend.handler;
 
+import com.ron.backend.exception.LimitExceedException;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -33,4 +34,17 @@ public class GlobalExceptionHandler {
                 .status(404)
                 .body(map);
     }
+
+    @ExceptionHandler(LimitExceedException.class)
+    public ResponseEntity<?> handleLimitExceedException(LimitExceedException ex) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("status", 500);
+        map.put("success", false);
+        map.put("message", ex.getMessage());
+
+        return ResponseEntity
+                .status(500)
+                .body(map);
+    }
+
 }

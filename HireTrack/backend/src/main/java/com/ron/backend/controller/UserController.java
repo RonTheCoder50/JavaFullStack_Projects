@@ -2,11 +2,14 @@ package com.ron.backend.controller;
 
 import com.ron.backend.dto.RequestLoginDto;
 import com.ron.backend.dto.UserDto;
+import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
 import com.ron.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -42,5 +45,10 @@ public class UserController {
     @GetMapping("/info")
     public ResponseEntity<?> getUserOverallInfo() {
         return userService.getUserData();
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getUserHistory() {
+        return ResponseEntity.ok(userService.getHistory());
     }
 }
