@@ -23,7 +23,6 @@ export function DashboardUserGrowthChart() {
       async function fetchChartData() {
         const resp = await fetchUserChartAPI(type);
         if(resp) {
-          console.log('user-growth data:', resp);
           setChartData(resp);
         } else {
           console.log('failed to fetch user growth chart data with type: ' + type);
@@ -35,7 +34,7 @@ export function DashboardUserGrowthChart() {
 
   
     return (
-      <div className="w-full h-75 bg-white rounded-xl p-4 shadow">
+      <div className="w-full max-w-[97%] mx-auto h-75 bg-white rounded-xl p-4 shadow">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold mb-4 ml-6">
             User Growth
@@ -85,7 +84,6 @@ export function DashboardAnalysisChart() {
       async function fetchChartData() {
         const resp = await fetchAnalysesChartAPI(type);
         if(resp) {
-          console.log('analyis data:', resp);
           setChartData(resp);
         } else {
           console.log('failed to fetch analyses chart data with type: ' + type);
@@ -96,7 +94,7 @@ export function DashboardAnalysisChart() {
     }, [type]);
 
   return (
-      <div className="w-full h-75 bg-white rounded-xl p-4 shadow">
+      <div className="w-full  max-w-[97%] mx-auto h-75 bg-white rounded-xl p-4 shadow">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold mb-4 ml-6">
             Resume Analysis
@@ -140,7 +138,7 @@ export function DashboardAnalysisChart() {
 
 export function DashboardDonutChart({ data }) {
   return (
-    <div className="w-full h-80 bg-white rounded-xl p-6 my-4 shadow">
+    <div className="w-full max-w-[97%] mx-auto h-80 bg-white rounded-xl p-6 my-4 shadow">
 
       <h2 className="text-lg font-semibold mb-4 p-2">
         Free vs Pro Users

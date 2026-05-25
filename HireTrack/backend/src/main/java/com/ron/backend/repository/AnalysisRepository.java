@@ -45,7 +45,7 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
     Long getTotalAnalysis(Long userId);
 
     Analysis findByFilenameAndUserId(String fileName, Long userId);
-
+    Analysis findByFilenameAndUser_Id(String fileName, Long userId);
     //chart query
     @Query("""
         SELECT COUNT(a)
@@ -68,4 +68,6 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
         ORDER BY MONTH(date)
     """, nativeQuery = true)
     List<ChartDto> getYearlyAnalysesCount();
+
+    List<Analysis> findByUser_Id(Long userId);
 }

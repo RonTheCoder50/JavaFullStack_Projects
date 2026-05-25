@@ -19,6 +19,11 @@ export default function NavbarPage({ status, handleStatus }) {
     const [theme, setTheme] = useState('light');
     const [sideToggle, isSideToggle] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
+    const isAdmin =  user?.roles.filter(role => role === 'ROLE_ADMIN');
+    const defaultPage =
+        isAdmin?.length > 0
+        ? 'userdata'
+        : 'history';
 
     function toggleSideBar() {
         isSideToggle(!sideToggle);
@@ -56,11 +61,16 @@ export default function NavbarPage({ status, handleStatus }) {
                             </span>
                         </div>
 
-                        <div onClick={() => handleStatus('history')}  
+                        <div onClick={() => 
+                            handleStatus(defaultPage)
+                        }  
                             className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
                             <MdOutlineHistory />
                             <span className="text-base tracking-wide font-normal">
-                                History
+                                {defaultPage 
+                                    ? 'Users Data'
+                                    : 'History'
+                                }
                             </span>
                         </div>
 
@@ -107,12 +117,12 @@ export default function NavbarPage({ status, handleStatus }) {
                 />
 
                 <NavBox
-                    value={'History'}
+                    value={isAdmin?.length > 0 ? 'userdata' : 'History'}
                     status={status}
                 />
                 
                 <NavBox
-                    value={'Pricing'}
+                    value={isAdmin?.length > 0 ? 'analyses' : 'Pricing'}
                     status={status}
                 />
             </div>

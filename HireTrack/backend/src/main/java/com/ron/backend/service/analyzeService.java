@@ -225,7 +225,7 @@ public class analyzeService {
 
     public AnalysisResponseDto viewRecentAnalysis(String filename) {
         try {
-            Users user =  userRepo.findByUsername(getCurrentUser());
+            Users user = userRepo.findByUsername(getCurrentUser());
             Analysis analysis = analysisRepo.findByFilenameAndUserId(filename, user.getId());
 
             if(analysis != null){

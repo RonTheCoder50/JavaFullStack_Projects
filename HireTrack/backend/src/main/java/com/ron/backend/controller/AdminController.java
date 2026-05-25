@@ -48,4 +48,20 @@ public class AdminController {
     ) {
         return ResponseEntity.ok(service.toggleBlock(id, username));
     }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<?> removeUser(
+            @RequestParam Long id,
+            @RequestParam String username
+    ) {
+        return ResponseEntity.ok(service.deleteUser(id, username));
+    }
+
+    @GetMapping("/view")
+    public ResponseEntity<?> viewAnalysis(
+            @RequestParam Long id,
+            @RequestParam String filename
+    ) {
+        return ResponseEntity.ok(service.getAnalysis(id, filename));
+    }
 }

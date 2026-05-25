@@ -9,10 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
-    Users findById(long id);
+    Optional<Users> findById(Long id);
     Users findByUsername(String username);
     Users findByUsernameAndPassword(String username, String password);
 

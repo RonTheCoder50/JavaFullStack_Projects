@@ -1,74 +1,18 @@
 import FileUploadBox from "@/components-project/fileuploadbox";
-import { HistoryTable, UserInfoTable } from "@/components-project/tables";
+import { HistoryTable } from "@/components-project/tables";
 import HeroCard from "@/components-project/herocard";
-import { useEffect, useState } from "react";
 
 import { TailSpin } from "react-loader-spinner";
-import { fetchAdminDataAPI, getUserDataAPI } from "@/API";
 
 import { 
     DashboardUserGrowthChart,
     DashboardAnalysisChart,
-    DashboardDonutChart
+    DashboardDonutChart,
 } from "@/components-project/charts";
 
-export default function DashBoardPage() {
-    const [data, setData] = useState(null); //userData!
-    const [adminData, setAdminData] = useState(null);
-
-    const [loading, setLoading] = useState(false); 
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    function handleLoading() {
-        setLoading(!loading);
-    }
-
-    async function fetchUserData() {
-        try {
-            setLoading(true);
-
-            const resp = await getUserDataAPI();
-            console.log('user data:', resp);
-            setData(resp);
-
-        } catch(err) {
-            console.log(err);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    async function fetchAdminData() {
-        const response = await fetchAdminDataAPI();
-        if(response) {
-            setAdminData(response);
-            console.log('admin data: ', response);
-        } else {
-            alert('failed to fetch user count!');
-        }
-    }
-
-    useEffect(() => {
-        fetchUserData();
-    }, []);
-
-    useEffect(() => {
-        fetchAdminData();
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem('block', data?.isBlock
-            ? true
-            : false
-        );
-    }, [data]);
-
-    function handleRefresh() {
-        fetchAdminData();
-    }
-
+export default function DashBoardPage({ user, data, loading, refresh}) {
+   
     //Admin dashboard
-    // overall user info
     if(user.roles.includes('ROLE_ADMIN')) {
         return (
             <section 
@@ -88,22 +32,22 @@ export default function DashBoardPage() {
                 <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-8 gap-6 place-items-center p-4">
                     <HeroCard
                         name={'Total Users'}
-                        value={adminData?.totalUsers || 0}
+                        value={data?.totalUsers || 0}
                     />
 
                     <HeroCard
                         name={'Total Analyses'}
-                        value={adminData?.totalAnalyses || 0}
+                        value={data?.totalAnalyses || 0}
                     />
 
                     <HeroCard
                         name={'Todays Analyses'}
-                        value={adminData?.todayAnalyses || 0}
+                        value={data?.todayAnalyses || 0}
                     />
 
                     <HeroCard
                         name={'Average ATS Score'}
-                        value={adminData?.avgAtsScore.toFixed(2) || 0}
+                        value={data?.avgAtsScore.toFixed(2) || 0}
                     />
                 </div>
                 
@@ -111,13 +55,12 @@ export default function DashBoardPage() {
 
                 <DashboardAnalysisChart />
 
-                <DashboardDonutChart data={adminData?.planData} />
-
-                <UserInfoTable refresh={() => handleRefresh()} data={adminData?.userDataList} />
+                <DashboardDonutChart data={data?.planData} />
             </section>
         );
     }    
 
+    //User dashboard
     return (
         <section className={`
             min-h-screen w-full 
@@ -172,7 +115,7 @@ export default function DashBoardPage() {
                 </h1>
                 
                 <FileUploadBox 
-                    setLoading={() => handleLoading()}
+                    setLoading={() => loading()}
                 />
             </div>
 
@@ -184,7 +127,7 @@ export default function DashBoardPage() {
                 
                 <HistoryTable
                     data={data?.analysisHistory}
-                    refresh={fetchUserData}
+                    refresh={() => refresh()}
                 />
             </div>
 
@@ -218,9 +161,5 @@ export default function DashBoardPage() {
             </footer>
         </section>
     );
-
-
-    //Moderator dashboard
-    //overall user + payment & history + overall controll.
 }
 

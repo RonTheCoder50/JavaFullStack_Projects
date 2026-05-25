@@ -1,5 +1,6 @@
 package com.ron.backend.dto;
 
+import com.ron.backend.model.AnalysesTableDto;
 import com.ron.backend.model.ChartDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,4 +23,5 @@ public class AdminDataDTO {
 
     List<ChartDto> planData;
     List<UserInfoDto> userDataList;
+    List<AnalysesTableDto> analysesDataList;
 }

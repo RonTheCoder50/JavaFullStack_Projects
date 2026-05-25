@@ -1,9 +1,12 @@
 package com.ron.backend.service;
 
 import com.ron.backend.dto.AdminDataDTO;
+import com.ron.backend.dto.AnalysisResponseDto;
 import com.ron.backend.dto.UserInfoDto;
+import com.ron.backend.entity.Analysis;
 import com.ron.backend.entity.UserData;
 import com.ron.backend.entity.Users;
+import com.ron.backend.model.AnalysesTableDto;
 import com.ron.backend.model.ChartDto;
 import com.ron.backend.repository.AnalysisRepository;
 import com.ron.backend.repository.UserDataRepository;
@@ -61,6 +64,7 @@ public class AdminService {
         );
 
         adminDataDTO.setUserDataList(getAllUserInfo()); //total userinfo for admin panel.
+        adminDataDTO.setAnalysesDataList(getAllAnalysesData());
         return adminDataDTO;
     }
 
@@ -197,6 +201,7 @@ public class AdminService {
              userInfoDto.setAvgAtsScore(userData.getAvgAtsScore());
              userInfoDto.setTotalAnalyses(userData.getTotalAnalysis());
              userInfoDto.setIsBlock(userData.getBlock() != null && userData.getBlock());
+             userInfoDto.setRoles(user.getRoles());
 
              result.add(userInfoDto);
          }
@@ -215,6 +220,53 @@ public class AdminService {
             userData.setBlock(true);
             userDataRepo.save(userData);
             return "user " + username + ", id: " + id +" blocked successfully";
+        }
+    }
+
+    public String deleteUser(Long id, String username) {
+        userRepo.deleteById(id);
+        return "user "+ username +" deleted successfully";
+    }
+
+    public List<AnalysesTableDto> getAllAnalysesData() {
+        //each user -> each analyses sent!!
+        List<Users> users =  userRepo.findAll();
+        List<AnalysesTableDto> result = new ArrayList<>();
+
+        for(Users user : users) {
+            List<Analysis> userAnalyses = analysisRepo.findByUser_Id(user.getId());
+            for(Analysis analysis : userAnalyses) {
+                AnalysesTableDto ans = new AnalysesTableDto();
+                ans.setUsername(user.getUsername());
+
+                ans.setFilename(analysis.getFilename());
+                ans.setTime(analysis.getDate());
+                ans.setAts(analysis.getAts());
+                ans.setUid(user.getId());
+                result.add(ans);
+            }
+        }
+
+        return result;
+    }
+
+    public AnalysisResponseDto getAnalysis(Long userId, String filename) {
+        try {
+            Users user = userRepo.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("user not found"));
+            Analysis analysis = analysisRepo.findByFilenameAndUser_Id(filename, user.getId());
+
+            if(analysis != null) {
+                AnalysisResponseDto dto = new AnalysisResponseDto();
+                dto.setContent(analysis.getContent());
+                dto.setFilename(analysis.getFilename());
+                dto.setDate(analysis.getDate());
+                return dto;
+            } else {
+                return null;
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("something went wrong" + e.getMessage());
         }
     }
 }

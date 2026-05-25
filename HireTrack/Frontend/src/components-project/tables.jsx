@@ -1,8 +1,8 @@
-import { removeRecentAnalysisAPI, viewRecentAnalysisAPI } from "@/API";
+import { removeRecentAnalysisAPI, removeUserAPI, viewRecentAnalysisAPI } from "@/API";
 import { Eye, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 
-import { toggleBlockAPI } from "@/API";
+import { toggleBlockAPI, viewAnalysesAPI } from "@/API";
 
 export function HistoryTable({ data, refresh }) {
   const navigate = useNavigate();
@@ -182,7 +182,9 @@ export function HistoryTable({ data, refresh }) {
   );
 }
 
-export function UserInfoTable({ refresh, data }) {
+export function UserInfoTable({ refresh, data, value, handleInput }) {
+
+  data = data?.filter(user => !user.roles?.includes('ROLE_ADMIN'));
 
   //api call to block/unblock..
   async function handleBlock(id, username) {
@@ -191,15 +193,49 @@ export function UserInfoTable({ refresh, data }) {
     }
     
     const response = await toggleBlockAPI(id, username);
-    refresh(); //for rerender admin_data!
-    console.log(response);
+    if(response) {
+      refresh(); //for rerender admin_data!
+      console.log(response);
+    }
   }
 
   //delete user
-  
+  async function handleDeleteUser(id, username) {
+    if(!confirm(`Are you serious about to remove user ${ username} ?`)) {
+      return;
+    }
+
+    const response = await removeUserAPI(id, username);
+    if(response) {
+      refresh();
+      console.log(response);
+    } 
+  } 
 
   return (
-    <div className="w-full max-w-[95%] mx-auto overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm mb-4">
+      <div className="pt-4 flex justify-around items-center">
+        <h1 className="text-lg md:text-xl font-bold tracking-wide">
+          USER INFO CHART
+        </h1>
+
+        <input
+          onChange={handleInput}
+          value={value}
+          type="text" 
+          className={`
+            border
+          border-gray-400
+          focus:border-gray-950 
+            focus:ring-2 
+          ring-sky-400 
+            py-1 px-3 
+            rounded-md
+          `}
+
+          placeholder="search by username"
+        />
+      </div>
 
       <table className="w-full min-w-[900px] border-collapse">
 
@@ -303,9 +339,155 @@ export function UserInfoTable({ refresh, data }) {
                   </button>
 
                   <button
+                    onClick={() => 
+                      handleDeleteUser(user?.userId, user?.username)
+                    }
                     className="px-4 py-2 rounded-lg bg-red-100 text-red-700 text-sm font-medium hover:bg-red-200 transition"
                   >
                     Delete
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  );
+}
+
+export function AnalysesDataTable({ data, value, handleInput }) {
+  const navigate = useNavigate();
+
+  async function handleViewFile(id, filename) {
+    //access click file data from analysis
+    const analysis = await viewAnalysesAPI(id, filename);
+    console.log(id + ' ' + filename);
+    console.log(analysis);
+
+    if(analysis) {
+      navigate(
+          '/analysis-output',
+          {
+            state: {
+              response: JSON.parse(analysis.content),
+              filename: analysis.filename,
+              date: analysis.date
+            }
+          }
+      );
+    } else {
+      alert('failed to open resume analysis!');
+    }
+  }
+
+  return (
+    <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm mb-4">
+      <div className="pt-4 flex justify-around items-center">
+        <h1 className="text-lg md:text-xl font-bold tracking-wide">
+          USER ANALYSES CHART
+        </h1>
+
+        <input
+          onChange={handleInput}
+          value={value}
+          type="text" 
+          className={`
+            border
+          border-gray-400
+          focus:border-gray-950 
+            focus:ring-2 
+          ring-sky-400 
+            py-1 px-3 
+            rounded-md
+          `}
+
+          placeholder="search by username"
+        />
+      </div>
+
+      <table className="w-full min-w-[900px] border-collapse">
+
+        <thead className="bg-gray-50">
+
+          <tr>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+              No.
+            </th>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+              username
+            </th>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+              filename
+            </th>
+
+            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+              date
+            </th>
+
+            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+              ATS
+            </th>
+          
+            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+              View
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {data?.map((analysis, index) => (
+
+            <tr
+              key={index}
+              className="border-t border-gray-100 hover:bg-gray-50 transition"
+            >
+
+              <td className="px-6 py-5 text-sm text-gray-700">
+                {index + 1}
+              </td>
+
+              <td className="px-6 py-5 text-sm font-medium text-gray-800">
+                {analysis?.username}
+              </td>
+
+              <td className="px-6 py-5 text-sm font-medium text-gray-800">
+                {analysis?.filename}
+              </td>
+
+              <td className="px-6 py-5 text-sm text-gray-700">
+                {
+                  analysis?.time?.split('T')[0] 
+                  + ' | ' + analysis?.time?.split('T')[1].substring(0, 8) 
+                  || undefined
+                }
+              </td>
+
+              <td className="px-6 py-5 text-center text-sm font-medium text-blue-600">
+                {analysis?.ats.toFixed(2)}%
+              </td>
+
+              <td className="px-6 py-5">
+
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => handleViewFile(analysis?.uid, analysis?.filename)}
+                    className="px-4 py-2 rounded-lg bg-red-100 text-red-700 text-sm font-medium hover:bg-red-200 transition"
+                  >
+                    <Eye />
                   </button>
 
                 </div>
