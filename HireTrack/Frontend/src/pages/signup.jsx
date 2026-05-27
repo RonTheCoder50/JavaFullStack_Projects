@@ -13,43 +13,37 @@ import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router"
 import { useState } from "react"
 
-import { loginAPI, signupAPI } from "@/API"
+import { signupAPI } from "@/API"
 
 export default function SignupPage() {
-    const [info, setInfo] = useState({username: '', password: ''});
+    const [info, setInfo] = useState({
+        username: '',
+        password: '', 
+        email: ''
+    });
+
     const navigate = useNavigate();
 
-    function handleUsername(e) {
-        setInfo({
-            ...info,
-            username: e.target.value
-        });
-    }
-
-    function handlePassword(e) {
-        setInfo({
-            ...info,
-            password: e.target.value
-        });
+    function handleInput(e) {
+        const {name, value} = e.target;
+        setInfo(prev => ({
+            ...prev,
+            [name]: value
+        }));
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
-        try {
-            const response = await signupAPI(info);
-            console.log("server response: ", response?.data);
+        //signup + first login -> fetch to main page.
+        const response = await signupAPI(info);
+        if(response) {
+            console.log("server response: ", response);
 
-            //now login for bearer token.
-            const resp = await loginAPI(info);
-            console.log("token", resp?.data);
+            localStorage.setItem("token", response.bearerToken);
+            localStorage.setItem("user", JSON.stringify(response));
 
-            localStorage.setItem("token", resp?.data?.bearerToken);
-            localStorage.setItem("user", JSON.stringify(resp?.data));
-            navigate('/main');
-        } catch(err) {
-            console.log(err);
-        }
-          
+            navigate('/main');   
+        } 
     }
 
     return (
@@ -65,32 +59,28 @@ export default function SignupPage() {
 
             <CardContent>
             <form className="space-y-4">
-                <div className="space-y-2">
-                    <Label>Username</Label>
-                    <Input
-                        type="text"
-                        value={info.username}
-                        onChange={handleUsername}
-                        placeholder="jack123"
-                    />
-                </div>
-
-                {/* <div className="space-y-2">
-                <Label>Email</Label>
-                <Input
-                    type="email"
-                    placeholder="m@example.com"
+                <InputComponent 
+                    name={'Username'}
+                    type={'text'}
+                    value={info.username}
+                    onChange={handleInput}
+                    placeholder={'jack123'}
                 />
-                </div> */}
 
-                <div className="space-y-2">
-                    <Label>Password</Label>
-                    <Input 
-                        type="password"
-                        value={info.password}
-                        onChange={handlePassword} 
-                    />
-                </div>
+                <InputComponent 
+                    name={'Email'}
+                    type={'email'}
+                    value={info.email}
+                    onChange={handleInput}
+                    placeholder={'john123@gmail.com'}
+                />
+
+                <InputComponent 
+                    name={'Password'}
+                    type={'password'}
+                    value={info.password}
+                    onChange={handleInput}
+                />
 
                 <Button 
                     className="w-full"
@@ -110,6 +100,21 @@ export default function SignupPage() {
             </form>
             </CardContent>
         </Card>
+        </div>
+    );
+}
+
+function InputComponent({ name, type, value, onChange, placeholder }) {
+    return (
+        <div className="space-y-2">
+            <Label>{name}</Label>
+                <Input
+                    name={name.toLowerCase()}
+                    type={type}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                />
         </div>
     );
 }

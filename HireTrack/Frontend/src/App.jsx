@@ -7,6 +7,7 @@ import IntroPage from "./pages/Intro";
 import MainPage from "./pages/mainPage";
 import DashBoardPage from "./pages/dashboard";
 import AnalysisOutputPage from "./pages/output";
+import ProfilePage from "./pages/profile";
 
 function App() {
   return (
@@ -38,6 +39,10 @@ function App() {
       <Route 
         path="/analysis-output"
         element={<AnalysisOutputPage />} 
+      />
+      <Route
+        path="/profile"
+        element={<ProfilePage />}
       />
     </Routes>
   );

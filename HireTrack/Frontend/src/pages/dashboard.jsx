@@ -9,11 +9,12 @@ import {
     DashboardAnalysisChart,
     DashboardDonutChart,
 } from "@/components-project/charts";
+import { useTheme } from "./theme";
 
-export default function DashBoardPage({ user, data, loading, refresh}) {
-   
+export default function DashBoardPage({ user, data, isLoad, toggleLoading, refresh}) {
+
     //Admin dashboard
-    if(user.roles.includes('ROLE_ADMIN')) {
+    if(user.roles?.includes('ROLE_ADMIN')) {
         return (
             <section 
                 className={`
@@ -29,7 +30,7 @@ export default function DashBoardPage({ user, data, loading, refresh}) {
                     Hello, {user?.username} 👋
                 </h1>
 
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-8 gap-6 place-items-center p-4">
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 my-8 gap-6 place-items-center place-content-center p-4">
                     <HeroCard
                         name={'Total Users'}
                         value={data?.totalUsers || 0}
@@ -107,7 +108,7 @@ export default function DashBoardPage({ user, data, loading, refresh}) {
                     width="80"
                     color="gray"
                     ariaLabel="tail-spin-loading"
-                    visible={loading}
+                    visible={isLoad}
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 />
                 <h1 className="text-center underline underline-offset-2 text-base sm:text-lg tracking-wide font-normal decoration-sky-200">
@@ -115,7 +116,7 @@ export default function DashBoardPage({ user, data, loading, refresh}) {
                 </h1>
                 
                 <FileUploadBox 
-                    setLoading={() => loading()}
+                    toggle={toggleLoading}
                 />
             </div>
 

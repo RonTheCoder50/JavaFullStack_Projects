@@ -3,6 +3,7 @@ import { Eye, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { toggleBlockAPI, viewAnalysesAPI } from "@/API";
+import { useTheme } from "@/pages/theme";
 
 export function HistoryTable({ data, refresh }) {
   const navigate = useNavigate();
@@ -19,7 +20,8 @@ export function HistoryTable({ data, refresh }) {
             state: {
               response: JSON.parse(analysis.content),
               filename: analysis.filename,
-              date: analysis.date
+              date: analysis.date,
+              from: location.pathname
             }
           }
       );
@@ -42,7 +44,7 @@ export function HistoryTable({ data, refresh }) {
   }
 
   return (
-    <div className="w-full max-w-[95%] mx-auto overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="w-full max-w-[95%] mx-auto overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
       <table className="w-full min-w-[700px] border-collapse">
         <thead className="bg-gray-50">
           <tr>
@@ -185,6 +187,7 @@ export function HistoryTable({ data, refresh }) {
 export function UserInfoTable({ refresh, data, value, handleInput }) {
 
   data = data?.filter(user => !user.roles?.includes('ROLE_ADMIN'));
+  const { theme } = useTheme();
 
   //api call to block/unblock..
   async function handleBlock(id, username) {
@@ -213,7 +216,7 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
   } 
 
   return (
-    <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm mb-4">
+    <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 shadow-sm mb-4">
       <div className="pt-4 flex justify-around items-center">
         <h1 className="text-lg md:text-xl font-bold tracking-wide">
           USER INFO CHART
@@ -239,39 +242,52 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
 
       <table className="w-full min-w-[900px] border-collapse">
 
-        <thead className="bg-gray-50">
+        <thead 
+          className={`
+            ${theme === 'light' 
+              ? 'bg-gray-50'
+              : 'bg-zinc-800'
+            }
+          `}
+        >
 
-          <tr>
+          <tr 
+            className={`
+              ${theme === 'light'
+                ? 'text-gray-600' 
+                : 'text-gray-300'}
+          `}
+          >
 
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-left text-sm font-semibold">
               No.
             </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-left text-sm font-semibold">
               ID
             </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-left text-sm font-semibold ">
               Name
             </th>
 
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-left text-sm font-semibold ">
               Date Of Joining
             </th>
 
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-center text-sm font-semibold ">
               Plan
             </th>
 
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-center text-sm font-semibold ">
               Total Analyses
             </th>
 
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-center text-sm font-semibold ">
               Avg ATS
             </th>
 
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
+            <th className="px-6 py-4 text-center text-sm font-semibold ">
               Action
             </th>
 
@@ -285,22 +301,31 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
 
             <tr
               key={user?.userId}
-              className="border-t border-gray-100 hover:bg-gray-50 transition"
+              className={`
+                border-t 
+                border-gray-100 
+                hover:bg-gray-50 
+                ${theme === 'light'
+                  ? 'border-gray-100 hover:bg-gray-50 text-gray-700'
+                  : 'hover:bg-zinc-800 text-gray-200'
+                }
+                transition
+              `}
             >
 
-              <td className="px-6 py-5 text-sm text-gray-700">
+              <td className="px-6 py-5 text-sm ">
                 {index + 1}
               </td>
 
-              <td className="px-6 py-5 text-sm text-gray-700">
+              <td className="px-6 py-5 text-sm">
                 #{user?.userId}
               </td>
 
-              <td className="px-6 py-5 text-sm font-medium text-gray-800">
+              <td className="px-6 py-5 text-sm font-medium">
                 {user?.username}
               </td>
 
-              <td className="px-6 py-5 text-sm text-gray-700">
+              <td className="px-6 py-5 text-sm">
                 {user?.dateOfJoining}
               </td>
 
@@ -317,11 +342,23 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
                 </span>
               </td>
 
-              <td className="px-6 py-5 text-center text-sm text-gray-700">
+              <td className="px-6 py-5 text-center text-sm">
                 {user?.totalAnalyses}
               </td>
 
-              <td className="px-6 py-5 text-center text-sm font-medium text-blue-600">
+              <td 
+                className={`
+                  px-6
+                  py-5 
+                  text-center 
+                  text-sm 
+                  font-medium 
+                  ${theme === 'light' 
+                    ? 'text-blue-600' 
+                    : 'text-blue-200'
+                    }
+                `}
+              >
                 {user?.avgAtsScore.toFixed(2)}%
               </td>
 
@@ -365,6 +402,7 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
 
 export function AnalysesDataTable({ data, value, handleInput }) {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   async function handleViewFile(id, filename) {
     //access click file data from analysis
@@ -379,7 +417,8 @@ export function AnalysesDataTable({ data, value, handleInput }) {
             state: {
               response: JSON.parse(analysis.content),
               filename: analysis.filename,
-              date: analysis.date
+              date: analysis.date,
+              from: location.pathname
             }
           }
       );
@@ -389,7 +428,7 @@ export function AnalysesDataTable({ data, value, handleInput }) {
   }
 
   return (
-    <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm mb-4">
+    <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 shadow-sm mb-4">
       <div className="pt-4 flex justify-around items-center">
         <h1 className="text-lg md:text-xl font-bold tracking-wide">
           USER ANALYSES CHART
@@ -415,34 +454,22 @@ export function AnalysesDataTable({ data, value, handleInput }) {
 
       <table className="w-full min-w-[900px] border-collapse">
 
-        <thead className="bg-gray-50">
+        <thead 
+          className={`
+            ${theme === 'light' 
+              ? 'bg-gray-50'
+              : 'bg-zinc-800'
+            }
+          `}
+        >
 
           <tr>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              No.
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              username
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              filename
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              date
-            </th>
-
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
-              ATS
-            </th>
-          
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
-              View
-            </th>
-
+            <TableHead value={'No.'} />
+            <TableHead value={'username'} />
+            <TableHead value={'filename'} />
+            <TableHead value={'date'} />
+            <TableHead value={'ATS'} />
+            <TableHead value={'View'} />
           </tr>
 
         </thead>
@@ -453,32 +480,29 @@ export function AnalysesDataTable({ data, value, handleInput }) {
 
             <tr
               key={index}
-              className="border-t border-gray-100 hover:bg-gray-50 transition"
-            >
-
-              <td className="px-6 py-5 text-sm text-gray-700">
-                {index + 1}
-              </td>
-
-              <td className="px-6 py-5 text-sm font-medium text-gray-800">
-                {analysis?.username}
-              </td>
-
-              <td className="px-6 py-5 text-sm font-medium text-gray-800">
-                {analysis?.filename}
-              </td>
-
-              <td className="px-6 py-5 text-sm text-gray-700">
-                {
-                  analysis?.time?.split('T')[0] 
-                  + ' | ' + analysis?.time?.split('T')[1].substring(0, 8) 
-                  || undefined
+              className={`
+                border-t 
+                border-gray-100 
+                hover:bg-gray-50 
+                ${theme === 'light'
+                  ? 'border-gray-100 hover:bg-gray-50 text-gray-700'
+                  : 'hover:bg-zinc-800 text-gray-200'
                 }
-              </td>
-
-              <td className="px-6 py-5 text-center text-sm font-medium text-blue-600">
-                {analysis?.ats.toFixed(2)}%
-              </td>
+                transition
+              `}
+            >
+              <TableData value={index + 1} />
+              <TableData value={analysis?.username} />
+              <TableData value={analysis?.filename} />
+              <TableData 
+                  value={
+                    analysis?.time?.split('T')[0] 
+                    + ' | ' 
+                    + analysis?.time?.split('T')[1].substring(0, 8) 
+                    || undefined
+                  } 
+              />
+              <TableData value={analysis?.ats.toFixed(2) + ' ' + '%'} />
 
               <td className="px-6 py-5">
 
@@ -503,5 +527,21 @@ export function AnalysesDataTable({ data, value, handleInput }) {
       </table>
 
     </div>
+  );
+}
+
+function TableHead({ value }) {
+  return (
+    <th className="px-6 py-4 text-left text-sm font-semibold">
+      {value}
+    </th>
+  );
+}
+
+function TableData({ value }) {
+  return (
+    <td className="px-6 py-5 text-sm">
+      {value}
+    </td>
   );
 }

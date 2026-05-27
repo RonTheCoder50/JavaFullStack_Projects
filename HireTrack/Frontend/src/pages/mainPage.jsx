@@ -13,6 +13,8 @@ import {
     getUserDataAPI,
     fetchAdminDataAPI 
 } from "@/API";
+import PriceSection from "./pricePage";
+import { useTheme } from "./theme";
 
 export default function MainPage() {
     const [status, setStatus] = useState('dashboard'); //dashboar, history, pricing.
@@ -38,6 +40,8 @@ export default function MainPage() {
             analysis?.username?.toLowerCase()
                 .includes(searchInput.toLowerCase())
     );
+
+    const { theme } = useTheme();
 
     useEffect(() => {
         fetchAdminData();
@@ -123,8 +127,18 @@ export default function MainPage() {
     }
     
     return (
-        <section className="w-full min-h-screen flex flex-col gap-14 bg-gray-200">
+        <section 
+            className={`
+                w-full 
+                min-h-screen 
+                flex 
+                flex-col 
+                gap-14 
+                 ${theme === 'light' ? 'bg-gray-100' : 'bg-zinc-900'}
+            `}
+        >
             <NavbarPage 
+                data={data}
                 status={status}
                 handleStatus={handleStatus}
             />
@@ -132,9 +146,10 @@ export default function MainPage() {
             {status === 'dashboard' &&
                 <DashBoardPage
                     user={user}
-                    data={isCurrentAdmin.length === 1 ? adminData : data}
-                    loading={handleLoading}
-                    refresh={isCurrentAdmin.length === 1
+                    data={isCurrentAdmin?.length === 1 ? adminData : data}
+                    isLoad={loading}
+                    toggleLoading={handleLoading}
+                    refresh={isCurrentAdmin?.length === 1
                         ? fetchAdminData 
                         : fetchUserData
                     }
@@ -169,6 +184,10 @@ export default function MainPage() {
                     value={searchInput}
                     handleInput={handleSearchInput}
                 />
+            }
+
+            {status === 'pricing' && 
+                <PriceSection />
             }
         </section>
     );

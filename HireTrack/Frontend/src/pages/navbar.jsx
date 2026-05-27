@@ -14,11 +14,14 @@ import {
 
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaRegUser } from "react-icons/fa6";
+import { useNavigate } from "react-router";
+import { useTheme } from "./theme";
 
-export default function NavbarPage({ status, handleStatus }) {
-    const [theme, setTheme] = useState('light');
+export default function NavbarPage({ data, status, handleStatus }) {
+    const { theme, toggleTheme } = useTheme();
     const [sideToggle, isSideToggle] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
+    const navigate = useNavigate();
     const isAdmin =  user?.roles.filter(role => role === 'ROLE_ADMIN');
     const defaultPage =
         isAdmin?.length > 0
@@ -31,7 +34,26 @@ export default function NavbarPage({ status, handleStatus }) {
 
     return (
         <>
-        <nav className="sm:hidden w-full max-w-[90%] xl:max-w-[80%] mx-auto flex items-center justify-between rounded-lg m-4 py-4 text-base shadow-md border px-7  ">
+        <nav
+            className={`
+                sm:hidden
+                w-full 
+                max-w-[90%] 
+                xl:max-w-[80%] 
+                mx-auto 
+                flex 
+                items-center 
+                justify-between 
+                rounded-lg 
+                m-4 
+                py-4 
+                text-base 
+                shadow-md 
+                border 
+                px-7 
+                ${theme === 'light' ? 'bg-white' : 'bg-zinc-800'}
+            `}
+        >
             <h1 className="tracking-normal font-medium">
                 HireTrack
             </h1>
@@ -104,7 +126,26 @@ export default function NavbarPage({ status, handleStatus }) {
             }
         </nav>
         
-        <nav className="hidden sm:flex w-full max-w-[90%] xl:max-w-[80%] mx-auto items-center justify-between rounded-lg m-4 py-4 text-base shadow-md border px-7">
+        <nav 
+            className={`
+                hidden 
+                sm:flex
+                w-full 
+                max-w-[90%] 
+                xl:max-w-[80%] 
+                mx-auto 
+                items-center 
+                justify-between 
+                rounded-lg 
+                m-4 
+                py-4 
+                text-base 
+                shadow-md 
+                border 
+                px-7
+                ${theme === 'light' ? 'bg-white' : 'bg-zinc-800'}
+            `}
+        >
             <h1 className="tracking-normal font-medium">
                 HireTrack
             </h1>
@@ -128,13 +169,21 @@ export default function NavbarPage({ status, handleStatus }) {
             </div>
             
             <div className="flex items-center gap-4 lg:gap:6 xl:gap-10 text-sm md:text-base">
-                <span className="w-8 h-8 flex justify-center items-center rounded-full border hover:shadow-sm cursor-default hover:border-sky-400">
+                <button 
+                    onClick={() => navigate('/profile', {
+                        state: {
+                            userdata: data
+                        }
+                    })}
+                    className="w-8 h-8 flex justify-center items-center rounded-full border hover:shadow-sm cursor-default hover:border-sky-400"
+                >
+
                     {user?.username.charAt(0)}
-                </span>
+                </button>
 
                 <div 
                     className="border p-1.5 rounded-full hover:border-sky-500"
-                    onClick={() => theme === 'light' ? setTheme('dark') : setTheme('light')}
+                    onClick={() => toggleTheme()}
                 >
                     {theme === 'light' 
                         ? <FiMoon size={16} />
@@ -148,11 +197,16 @@ export default function NavbarPage({ status, handleStatus }) {
 }
 
 function NavBox({ value, status }) {
+    const { theme } = useTheme();
+    
     return (
         <button
             value={value.toLowerCase()}
             className={`
-            ${status === value.toLowerCase() ? 'bg-sky-200/90' : 'bg-white'}
+            ${theme === 'light' && status === value.toLowerCase()
+                ? 'bg-sky-200/90' 
+                : theme === 'light' ? 'bg-white' : 'bg-zinc-800'
+            }
             hover:shadow-sm
           shadow-sky-400
             rounded-md py-1

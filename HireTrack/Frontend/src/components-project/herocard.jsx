@@ -1,4 +1,7 @@
+import { useTheme } from "@/pages/theme";
+
 function HeroCard({ name, value }) {
+    const { theme } = useTheme();
     return (
         <div
             className="
@@ -7,7 +10,6 @@ function HeroCard({ name, value }) {
                 mx-auto
                 rounded-2xl
                 border border-gray-200
-                bg-white
                 shadow-sm
                 hover:shadow-lg
                 hover:-translate-y-1
@@ -20,12 +22,12 @@ function HeroCard({ name, value }) {
         >
             <div className="space-y-2 text-center">
                 <h2
-                    className="
+                    className={`
                         text-base sm:text-lg
                         font-medium
-                        text-gray-500
                         tracking-wide
-                    "
+                         ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
+                    `}
                 >
                     {name}
                 </h2>
@@ -34,12 +36,12 @@ function HeroCard({ name, value }) {
             </div>
 
             <p
-                className="
+                className={`
                     text-3xl sm:text-4xl
                     font-bold
-                    text-gray-800
                     tracking-tight
-                "
+                    ${theme === 'light' ? 'text-gray-800' : 'text-gray-300'}
+                `}
             >
                 {value}
             </p>

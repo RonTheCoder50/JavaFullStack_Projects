@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.stereotype.Component;
 
@@ -15,19 +17,31 @@ import java.util.Map;
 @Component
 public class JWTService {
 
-    private static final String SECRET = "mysecretkeymysecretkeymysecretkeymysecretkey"; // ≥ 32 chars
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+//    @Value("${JWT_SECRET_KEY}")
+//    private String SECRET;
+//    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    @Value("${JWT_SECRET_KEY}")
+    private String secret;
+
+    private SecretKey key;
+
+    @PostConstruct
+    public void init() {
+        key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(String username){
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", "USER");
 
+        long EXPIRATION_TIME = 1000L * 60 * 60 * 24 * 30;
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(this.key, SignatureAlgorithm.HS256)
                 .compact();
     }
 

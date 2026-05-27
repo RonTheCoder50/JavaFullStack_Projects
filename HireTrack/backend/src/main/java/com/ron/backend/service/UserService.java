@@ -5,6 +5,7 @@ import com.ron.backend.entity.Analysis;
 import com.ron.backend.entity.UserData;
 import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
+import com.ron.backend.exception.DuplicateFoundException;
 import com.ron.backend.exception.UserNotFoundException;
 import com.ron.backend.repository.AnalysisRepository;
 import com.ron.backend.repository.HistoryRepository;
@@ -51,30 +52,33 @@ public class UserService {
     private analyzeService aService;
 
     //sign-up
-    public ResponseEntity<String> signup(Users user) {
-        Users us = userRepo.findByUsername(user.getUsername());
-        if (us == null) {
-            user.setDateOfJoining(LocalDate.now());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(new ArrayList<>());
-            user.addRole("ROLE_USER");
-            userRepo.save(user);
-
-            //now store user_data ->>
-            UserData userData = new UserData();
-            userData.setUser(user);
-            userData.setPlan("FREE");
-            userData.setRemainingLimit(5L);
-            userData.setLastResetDate(LocalDate.now());
-            userData.setTotalAnalysis(0L);
-            userData.setAvgAtsScore(0.0);
-            userData.setBlock(false);
-            userDataRepo.save(userData);
-
-            return ResponseEntity.ok("user added successfully!");
+    public ResponseLoginDto signup(SignupReqDto dto) {
+        Users user = userRepo.findByUsername(dto.getUsername());
+        if(user != null) {
+            throw new DuplicateFoundException("Username is already taken, try alternative!");
         }
 
-        return ResponseEntity.status(201).body("user already exists! \n now redirecting to login!");
+        user = new Users();
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setEmail(dto.getEmail());
+        user.setDateOfJoining(LocalDate.now());
+        user.setRoles(new ArrayList<>());
+        user.addRole("ROLE_USER");
+        userRepo.save(user);
+
+        //now store user_data ->>
+        UserData userData = new UserData();
+        userData.setUser(user);
+        userData.setPlan("FREE");
+        userData.setRemainingLimit(5L);
+        userData.setLastResetDate(LocalDate.now());
+        userData.setTotalAnalysis(0L);
+        userData.setAvgAtsScore(0.0);
+        userData.setBlock(false);
+        userDataRepo.save(userData);
+
+        return login(new RequestLoginDto(dto.getUsername(), dto.getPassword()));
     }
 
     public ResponseLoginDto login(RequestLoginDto user) {
@@ -90,13 +94,20 @@ public class UserService {
 
             ResponseLoginDto response = new ResponseLoginDto();
             response.setId(us.getId());
-            response.setUsername(user.getUsername());
+            response.setUsername(us.getUsername());
+            response.setEmail(us.getEmail());
             response.setDateTime(LocalDateTime.now());
             response.setBearerToken(jwtService.generateToken(user.getUsername()));
 
             List<AnalysisDto> list = new ArrayList<>();
-            for(Analysis analysis : us.getAnalyses()) {
-                list.add(new AnalysisDto(analysis.getId(), analysis.getContent()));
+            if(us.getAnalyses() != null) {
+                for(Analysis analysis : us.getAnalyses()) {
+                    if(analysis == null) {
+                        break;
+                    }
+
+                    list.add(new AnalysisDto(analysis.getId(), analysis.getContent()));
+                }
             }
             response.setAnalyses(list);
 

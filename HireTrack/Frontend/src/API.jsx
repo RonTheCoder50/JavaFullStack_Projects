@@ -1,17 +1,34 @@
 import axios from "axios";
 
-export async function signupAPI(data) {
+export async function signupAPI(info) {
     try {
-        const response = await axios.post(`http://localhost:8080/user/signup`, data);
-        return response;
+        const newInfo = {
+            username: info.username.trim(),
+            password: info.password.trim(),
+            email: info.email.trim()
+        }
+
+        const response = await axios.post(`http://localhost:8080/user/signup`,  newInfo);
+        return response.data;
     } catch(e) {
-        console.log(e.response?.data);
+        const errors = e.response?.data?.message;
+        if(typeof errors === 'string') {
+            alert(errors);
+        } else {
+            const allErrors = Object.values(errors).join("\n");
+            alert(allErrors);
+        }
     }
 }
 
-export async function loginAPI(data) {
+export async function loginAPI(info) {
     try {
-        const response = await axios.post(`http://localhost:8080/user/login`, data);
+        const newInfo = {
+            username: info.username.trim(),
+            password: info.password.trim(),
+        }
+
+        const response = await axios.post(`http://localhost:8080/user/login`, newInfo);
         return response;
     } catch(e) {
         console.log(e.response.data);

@@ -19,6 +19,7 @@ public class Users {
     private String username;
     private String password;
     private LocalDate dateOfJoining;
+    private String email;
 
     private List<String> roles;
     public void addRole(String role){

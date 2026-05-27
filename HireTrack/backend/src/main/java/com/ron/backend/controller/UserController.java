@@ -1,10 +1,12 @@
 package com.ron.backend.controller;
 
 import com.ron.backend.dto.RequestLoginDto;
+import com.ron.backend.dto.SignupReqDto;
 import com.ron.backend.dto.UserDto;
 import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
 import com.ron.backend.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +21,14 @@ public class UserController {
 
     //login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody RequestLoginDto user) {
-        return ResponseEntity.status(200).body(userService.login(user));
+    public ResponseEntity<?> login(@Valid @RequestBody RequestLoginDto dto) {
+        return ResponseEntity.status(200).body(userService.login(dto));
     }
 
     //signup
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody Users user) {
-        return userService.signup(user);
+    public ResponseEntity<?> signup(@Valid @RequestBody SignupReqDto dto) {
+        return ResponseEntity.ok(userService.signup(dto));
     }
 
     //get user

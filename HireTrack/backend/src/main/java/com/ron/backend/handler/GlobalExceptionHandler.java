@@ -1,12 +1,16 @@
 package com.ron.backend.handler;
 
+import com.ron.backend.exception.DuplicateFoundException;
 import com.ron.backend.exception.LimitExceedException;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDate;
 import java.util.*;
 
 @RestControllerAdvice
@@ -47,4 +51,30 @@ public class GlobalExceptionHandler {
                 .body(map);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach((error) -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("success", false);
+        res.put("status", 400);
+        res.put("timestamp", LocalDate.now());
+        res.put("message", errors);
+
+        return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DuplicateFoundException.class)
+    public ResponseEntity<?> handleDuplicateFoundException(DuplicateFoundException ex) {
+        Map<String,Object> res = new HashMap<>();
+        res.put("success", false);
+        res.put("status", 500);
+        res.put("timestamp", LocalDate.now());
+        res.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+    }
 }

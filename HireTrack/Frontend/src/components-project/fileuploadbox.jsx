@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { Upload, ImageIcon } from "lucide-react";
 import { analyzedResumeAPI, getStoreAnalyzedAPI } from "@/API";
 
-export default function FileUploadBox({ setLoading }) {
+export default function FileUploadBox({ toggle }) {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,10 +28,9 @@ export default function FileUploadBox({ setLoading }) {
 
  
   async function analyzeApiCall(file) {
+    toggle();  //loading enable..
     try {
       //1. check catched in db is exist?
-      setLoading();  //loading enable..
-      
       const analysis = await getStoreAnalyzedAPI(file?.name);
       if(analysis) {
         console.log("db cache response:", analysis);
@@ -41,7 +40,8 @@ export default function FileUploadBox({ setLoading }) {
             state: {
               response: JSON.parse(analysis.content),
               filename: analysis.filename,
-              date: analysis.date
+              date: analysis.date,
+              from: location.pathname
             }
           }
         );
@@ -59,17 +59,17 @@ export default function FileUploadBox({ setLoading }) {
           {
             state: {
               response,
-              filename: file?.name
+              filename: file?.name,
+              from: location.pathname
             }
           }
         );
       }
-
-      setLoading();
     } catch(e) {
       alert(`Limit Exceed!`);
-      setLoading();
       console.log(e);
+    } finally {
+      toggle();
     }
 
     setSelectedFile(null);

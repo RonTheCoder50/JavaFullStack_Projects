@@ -34,9 +34,11 @@ export default function LoginPage() {
             return;
         } 
         
-        try {
-            const response = await loginAPI(info);
-            localStorage.setItem("token", response?.data?.bearerToken);  
+        const response = await loginAPI(info);
+        
+        if(response?.data) {
+
+            localStorage.setItem("token", response.data.bearerToken);  
             localStorage.setItem("user", JSON.stringify(response.data));
 
             console.log("server response: ", response === undefined 
@@ -44,9 +46,6 @@ export default function LoginPage() {
                 : response?.data
             );
             navigate('/main');
-        } catch(err) {
-            console.log(err.response?.data);
-            alert('Invalid Username or password!');
         }
     }
 

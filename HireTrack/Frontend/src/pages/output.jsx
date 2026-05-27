@@ -8,7 +8,7 @@ import {
 
 import { Button } from "@base-ui/react/button";
 
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { Link } from "react-router";
 
 const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -16,6 +16,7 @@ const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'O
 export default function AnalysisOutputPage() {
   // backend response
   const location = useLocation();
+  const navigate = useNavigate();
   const data = location.state.response;
   const filename = location.state.filename;
 
@@ -45,10 +46,10 @@ export default function AnalysisOutputPage() {
     <section className="min-h-screen bg-[#0f172a] text-white px-4 py-10">
       <div className="max-w-6xl mx-auto flex flex-col gap-8">
         <div className="fixed top-10 right-10 my-4 z-50">
-          <Button className={`border border-red-400 py-1.5 px-3 bg-pink-800 text-white/90 rounded-xl cursor-default hover:scale-102`}>
-            <Link to={'/main'}>
-              Go Back
-            </Link>
+          <Button
+            onClick={() => navigate(location.state?.from)}
+            className={`border border-red-400 py-1.5 px-3 bg-pink-800 text-white/90 rounded-xl cursor-default hover:scale-102`}>
+            Go Back
           </Button>
         </div>
 

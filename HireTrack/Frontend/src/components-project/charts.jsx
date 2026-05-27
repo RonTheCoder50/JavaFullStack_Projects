@@ -1,4 +1,5 @@
 import { fetchUserChartAPI, fetchAnalysesChartAPI } from "@/API";
+import { useTheme } from "@/pages/theme";
  
 import { useEffect, useState } from "react";
 import {
@@ -34,7 +35,7 @@ export function DashboardUserGrowthChart() {
 
   
     return (
-      <div className="w-full max-w-[97%] mx-auto h-75 bg-white rounded-xl p-4 shadow">
+      <div className="w-full max-w-[97%] mx-auto h-75 rounded-xl p-4 shadow">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold mb-4 ml-6">
             User Growth
@@ -94,7 +95,7 @@ export function DashboardAnalysisChart() {
     }, [type]);
 
   return (
-      <div className="w-full  max-w-[97%] mx-auto h-75 bg-white rounded-xl p-4 shadow">
+      <div className="w-full  max-w-[97%] mx-auto h-75 rounded-xl p-4 shadow">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold mb-4 ml-6">
             Resume Analysis
@@ -138,7 +139,7 @@ export function DashboardAnalysisChart() {
 
 export function DashboardDonutChart({ data }) {
   return (
-    <div className="w-full max-w-[97%] mx-auto h-80 bg-white rounded-xl p-6 my-4 shadow">
+    <div className="w-full max-w-[97%] mx-auto h-80 rounded-xl p-6 my-4 shadow">
 
       <h2 className="text-lg font-semibold mb-4 p-2">
         Free vs Pro Users
