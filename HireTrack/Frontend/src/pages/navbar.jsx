@@ -1,7 +1,3 @@
-//navbar + sidebar 
-//navbar -> full
-//sidebar -> profile with darkMode and Hamburger
-
 import { useState } from "react";
 import { FiMoon } from "react-icons/fi";
 import { 
@@ -204,9 +200,12 @@ function NavBox({ value, status }) {
             value={value.toLowerCase()}
             className={`
             ${theme === 'light' && status === value.toLowerCase()
-                ? 'bg-sky-200/90' 
-                : theme === 'light' ? 'bg-white' : 'bg-zinc-800'
+                ? 'bg-sky-200/90 border-gray-300' 
+                : theme === 'light' 
+                ? 'bg-white border-gray-400' 
+                : 'bg-zinc-800 border-gray-500'
             }
+            border
             hover:shadow-sm
           shadow-sky-400
             rounded-md py-1

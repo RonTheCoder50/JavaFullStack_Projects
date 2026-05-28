@@ -19,6 +19,7 @@ import {
 export function DashboardUserGrowthChart() {  
     const [type, setType] = useState('weekly');
     const [chartData, setChartData] = useState([]);
+    const { theme } = useTheme();
 
     useEffect(() => {
       async function fetchChartData() {
@@ -47,7 +48,13 @@ export function DashboardUserGrowthChart() {
               setType(e.target.value);
               console.log(e.target.value);
             }}
-            className="p-1 border"
+            className={`
+              p-1 border
+              ${theme === 'light' 
+                ? 'bg-white text-black'
+                : 'bg-black text-white'
+              }
+            `}
           >
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -80,6 +87,7 @@ export function DashboardUserGrowthChart() {
 export function DashboardAnalysisChart() {
   const [type, setType] = useState('weekly');
   const [chartData, setChartData] = useState([]);
+  const { theme } = useTheme();
 
     useEffect(() => {
       async function fetchChartData() {
@@ -107,7 +115,13 @@ export function DashboardAnalysisChart() {
               setType(e.target.value);
               console.log(e.target.value);
             }}
-            className="p-1 border"
+            className={`
+              p-1 border
+              ${theme === 'light' 
+                ? 'bg-white text-black'
+                : 'bg-black text-white'
+              }
+            `}
           >
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>

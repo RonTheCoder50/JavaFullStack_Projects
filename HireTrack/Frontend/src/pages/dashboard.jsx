@@ -12,6 +12,7 @@ import {
 import { useTheme } from "./theme";
 
 export default function DashBoardPage({ user, data, isLoad, toggleLoading, refresh}) {
+    const { theme } = useTheme();
 
     //Admin dashboard
     if(user.roles?.includes('ROLE_ADMIN')) {
@@ -132,15 +133,45 @@ export default function DashBoardPage({ user, data, isLoad, toggleLoading, refre
                 />
             </div>
 
-            <footer className="mt-16 border-t border-gray-200 py-6">
+            <footer 
+                className={`
+                    mt-16
+                    border-t 
+                    py-6
+                    ${theme === 'light' 
+                        ? 'border-gray-200'
+                        : 'border-gray-600'
+                    }
+                `}
+            >
+
                 <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     
                     <div>
-                        <h2 className="text-sm font-medium text-gray-700">
+                        <h2 
+                            className={`
+                                text-sm 
+                                font-medium 
+                                ${theme === 'light' 
+                                    ? 'text-gray-700'
+                                    : 'text-gray-200'
+                                }
+                            `}
+                        >
                             HireTrack
                         </h2>
 
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p 
+                            className={`
+                                text-sm 
+
+                                mt-1
+                                ${theme === 'light' 
+                                    ? 'text-gray-500'
+                                    : 'text-gray-400'
+                                }
+                            `}
+                        >
                             Improve your resume with AI-powered ATS analysis.
                         </p>
                     </div>
@@ -150,7 +181,11 @@ export default function DashBoardPage({ user, data, isLoad, toggleLoading, refre
                             About
                         </a>
 
-                        <a href="#" className="hover:text-sky-500 transition">
+                        <a 
+                            onClick={() => 
+                                alert('lol \n kidding you are safe :) ')
+                            } 
+                        className="hover:text-sky-500 transition">
                             Privacy
                         </a>
 

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Upload, ImageIcon } from "lucide-react";
 import { analyzedResumeAPI, getStoreAnalyzedAPI } from "@/API";
+import { useTheme } from "@/pages/theme";
 
 export default function FileUploadBox({ toggle }) {
   const inputRef = useRef(null);
@@ -9,6 +10,7 @@ export default function FileUploadBox({ toggle }) {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const handleClick = () => {
     inputRef.current.click();
@@ -80,30 +82,51 @@ export default function FileUploadBox({ toggle }) {
     <div className="w-full flex justify-center">
       <div
         onClick={handleClick}
-        className="
+        className={`
           w-full max-w-md h-72
-          border-2 border-dashed border-gray-300
+          border-2
+          border-dashed 
           rounded-3xl
-          bg-white
           hover:border-sky-300
-          hover:bg-gray-50
+          ${theme === 'light'
+            ? 'hover:bg-gray-50 border-gray-300'
+            : 'hover:bg-zinc-800 border-gray-500'
+          }
           transition-all duration-300
           cursor-pointer
           flex flex-col items-center justify-center
           gap-4 
           shadow-sm
-        "
+        `}
       >
         <div className="p-5 rounded-full bg-gray-100">
           <Upload className="w-10 h-10 text-gray-700" />
         </div>
 
         <div className="text-center px-4">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 
+            className={`
+              text-xl 
+              font-semibold 
+              ${theme === 'light' 
+                ? 'text-gray-800'
+                : 'text-gray-300'
+              }
+            `}
+          >
             Upload File
           </h2>
 
-          <p className="text-sm text-gray-500 mt-1">
+          <p 
+            className={`
+              text-sm
+              mt-1
+              ${theme === 'light' 
+                ? 'text-gray-500'
+                : 'text-gray-400'
+              }
+            `}
+            >
             Click here to browse your files
           </p>
 

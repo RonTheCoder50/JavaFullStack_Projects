@@ -8,42 +8,63 @@ import MainPage from "./pages/mainPage";
 import DashBoardPage from "./pages/dashboard";
 import AnalysisOutputPage from "./pages/output";
 import ProfilePage from "./pages/profile";
+import ProtectedRoute from "./components-project/protectedRoute";
 
 function App() {
   return (
     <Routes>
-      <Route 
-        path="/" 
-        element={<IntroPage />}
+
+      {/* Public Routes */}
+      <Route path="/" element={<IntroPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/main"
+        element={
+          <ProtectedRoute>
+            <MainPage />
+          </ProtectedRoute>
+        }
       />
-      <Route 
-        path="/login" 
-        element={<LoginPage />} 
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashBoardPage />
+          </ProtectedRoute>
+        }
       />
-      <Route 
-        path="/signup" 
-        element={<SignupPage />} 
+
+      <Route
+        path="/analyzeService"
+        element={
+          <ProtectedRoute>
+            <AnalyzeResumePage />
+          </ProtectedRoute>
+        }
       />
-      <Route 
-        path="/main" 
-        element={<MainPage />} 
-      />
-      <Route  
-        path="/dashboard" 
-        element={<DashBoardPage />}
-      />
-      <Route 
-        path="/analyzeService" 
-        element={<AnalyzeResumePage />} 
-      />
-      <Route 
+
+      <Route
         path="/analysis-output"
-        element={<AnalysisOutputPage />} 
+        element={
+          <ProtectedRoute>
+            <AnalysisOutputPage />
+          </ProtectedRoute>
+        }
       />
+
       <Route
         path="/profile"
-        element={<ProfilePage />}
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
       />
+
     </Routes>
   );
 }

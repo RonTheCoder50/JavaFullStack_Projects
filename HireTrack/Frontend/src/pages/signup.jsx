@@ -9,13 +9,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import PasswordInput from "@/components-project/passwordInp"
 
 import { Link, useNavigate } from "react-router"
 import { useState } from "react"
 
 import { signupAPI } from "@/API"
+import { useTheme } from "./theme"
 
 export default function SignupPage() {
+    const { theme } = useTheme();
     const [info, setInfo] = useState({
         username: '',
         password: '', 
@@ -47,7 +50,17 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className={`
+                flex 
+                min-h-screen 
+                items-center 
+                justify-center 
+                ${theme === 'light' 
+                    ? 'bg-gray-100'
+                    : 'bg-zinc-900'
+                }
+            `}
+        >
         <Card className="w-[400px] shadow-xl">
             <CardHeader>
             <CardTitle className="text-2xl">Create Account</CardTitle>
@@ -75,9 +88,7 @@ export default function SignupPage() {
                     placeholder={'john123@gmail.com'}
                 />
 
-                <InputComponent 
-                    name={'Password'}
-                    type={'password'}
+                <PasswordInput 
                     value={info.password}
                     onChange={handleInput}
                 />
@@ -118,3 +129,4 @@ function InputComponent({ name, type, value, onChange, placeholder }) {
         </div>
     );
 }
+

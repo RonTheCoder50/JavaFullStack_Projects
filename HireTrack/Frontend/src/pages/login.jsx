@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import { loginAPI } from "@/API"
+import PasswordInput from "@/components-project/passwordInp"
+import { useTheme } from "./theme"
 
 export default function LoginPage() {
+    const { theme } = useTheme();
     const [info, setInfo] = useState({username: '', password: ''});
     const navigate = useNavigate();
 
@@ -50,7 +53,18 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div 
+            className={`
+                flex
+                min-h-screen 
+                items-center 
+                justify-center 
+                ${theme === 'light'
+                    ? 'bg-gray-100'
+                    : 'bg-zinc-900'
+                }
+            `}
+        >
         <Card className="w-[400px] shadow-xl">
             <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
@@ -71,21 +85,10 @@ export default function LoginPage() {
                     />
                 </div>
 
-                {/* <div className="space-y-2">
-                <Label>Email</Label>
-                    <Input 
-                        type="email"
-                        placeholder="m@example.com" 
-                    />
-                </div> */}
-
-                <div className="space-y-2">
-                    <Label>Password</Label>
-                    <Input
-                        onChange={handlePassword} 
-                        type="password" 
-                    />
-                </div>
+                <PasswordInput 
+                    value={info.password}
+                    onChange={handlePassword}
+                />
 
                 <Button className="w-full" onClick={(e) => handleSubmit(e)}>
                     Login

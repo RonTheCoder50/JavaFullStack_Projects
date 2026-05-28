@@ -7,6 +7,7 @@ import { useTheme } from "@/pages/theme";
 
 export function HistoryTable({ data, refresh }) {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   async function handleViewFile(filename) {
     //access click file data from analysis
@@ -46,71 +47,75 @@ export function HistoryTable({ data, refresh }) {
   return (
     <div className="w-full max-w-[95%] mx-auto overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
       <table className="w-full min-w-[700px] border-collapse">
-        <thead className="bg-gray-50">
+        <thead className={`
+          ${theme === 'light' 
+            ? 'bg-gray-50'
+            : 'bg-zinc-800'
+          }
+        `}
+        >
           <tr>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              Resume Name
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              ATS Score
-            </th>
-
-            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
-              Date
-            </th>
-
-            <th className="px-6 py-4 text-center text-sm font-semibold text-gray-600">
-              Action
-            </th>
+            <TableHead value={'Resume Name'} />
+            <TableHead value={'ATS Score'} />
+            <TableHead value={'Date'} />
+            <TableHead value={'Action'} />
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="text-center">
           {data?.length === 0 && 
             <tr
               key={0}
-              className="border-t border-gray-100 hover:bg-gray-50 transition"
+              className={`
+                border-t
+                transition
+                ${theme === 'light'
+                  ? 'border-gray-100 hover:bg-gray-50'
+                  : 'border-gray-400 hover:bg-zinc-950'
+                }  
+              `}
             >
-              <td className="px-6 py-5 text-sm text-gray-800 font-medium">
-                not found
-              </td>
-
-              <td className="px-6 py-5">
-                <span
-                  className={`
-                    px-3 py-1 rounded-full text-xs font-semibold
-                     bg-green-100 text-green-700    
-                  `}
-                >
-                  {0}%
-                </span>
-              </td>
-
-              <td className="px-6 py-5 text-sm text-gray-500">
-                undefined
-              </td>
+              <TableData value={'not found'} />
+              <TableData value={'0%'} />
+              <TableData value={'undefined'} />
 
               <td className="px-6 py-5">
                 <div className="flex items-center justify-center gap-3">
                   <button
-                    className="
+                    className={`
                       p-2 rounded-lg
-                      hover:bg-gray-100
                       transition
-                    "
+                      ${theme === 'light' 
+                        ? 'hover:bg-gray-100'
+                        : 'hover:bg-gray-700'
+                      }
+                    `}
                   >
-                    <Eye size={18} className="text-gray-600" />
+                    <Eye size={18}
+                      className={`
+                        ${theme === 'light'
+                          ? 'text-gray-600'
+                          : 'text-gray-200'
+                        }
+                      `} 
+                    />
                   </button>
 
                   <button
-                    className="
+                    className={`
                       p-2 rounded-lg
-                      hover:bg-red-100
                       transition
-                    "
+                      ${theme === 'light' 
+                        ? 'hover:bg-gray-100'
+                        : 'hover:bg-gray-700'
+                      }
+                    `}
                   >
-                    <Trash2 size={18} className="text-red-500" />
+                    <Trash2 size={18} 
+                      className={`
+                       text-red-500
+                      `} 
+                    />
                   </button>
                 </div>
               </td>
@@ -120,9 +125,27 @@ export function HistoryTable({ data, refresh }) {
           {data?.map((resume, index) => (
             <tr
               key={index}
-              className="border-t border-gray-100 hover:bg-gray-50 transition"
+              className={`
+                border-t
+                transition
+                ${theme === 'light'
+                  ? 'border-gray-100 hover:bg-gray-50'
+                  : 'border-gray-400 hover:bg-zinc-800'
+                }  
+              `}
             >
-              <td  className="px-6 py-5 text-sm text-gray-800 font-medium">
+              <td  
+                className={`
+                  px-6
+                  py-5 
+                  text-sm 
+                  font-medium
+                  ${theme === 'light' 
+                    ? 'text-gray-800'
+                    : 'text-gray-200'
+                  }
+                `}
+              >
                 {resume?.fileName}
               </td>
 
@@ -141,7 +164,18 @@ export function HistoryTable({ data, refresh }) {
                 </span>
               </td>
 
-              <td className="px-6 py-5 text-sm text-gray-500">
+              <td  
+                className={`
+                  px-6
+                  py-5 
+                  text-sm 
+                  font-medium
+                  ${theme === 'light' 
+                    ? 'text-gray-500'
+                    : 'text-gray-300'
+                  }
+                `}
+              >
                 {resume?.date}
               </td>
 
@@ -152,13 +186,23 @@ export function HistoryTable({ data, refresh }) {
                       e.stopPropagation();
                       handleViewFile(resume?.fileName);
                     }}
-                    className="
+                    className={`
                       p-2 rounded-lg
-                      hover:bg-gray-100
                       transition
-                    "
+                      ${theme === 'light' 
+                        ? 'hover:bg-gray-100'
+                        : 'hover:bg-gray-700'
+                      }
+                    `}
                   >
-                    <Eye size={18} className="text-gray-600" />
+                    <Eye size={18} 
+                      className={`
+                        ${theme === 'light'
+                          ? 'text-gray-600'
+                          : 'text-gray-200'
+                        }
+                      `} 
+                    />
                   </button>
 
                   <button
@@ -166,11 +210,14 @@ export function HistoryTable({ data, refresh }) {
                       e.stopPropagation();
                       handleDeleteAnalysis(resume?.fileName);
                     }}
-                    className="
+                    className={`
                       p-2 rounded-lg
-                      hover:bg-red-100
                       transition
-                    "
+                      ${theme === 'light' 
+                        ? 'hover:bg-gray-100'
+                        : 'hover:bg-gray-700'
+                      }
+                    `}
                   >
                     <Trash2 size={18} className="text-red-500" />
                   </button>
@@ -531,16 +578,42 @@ export function AnalysesDataTable({ data, value, handleInput }) {
 }
 
 function TableHead({ value }) {
+  const { theme } = useTheme();
+
   return (
-    <th className="px-6 py-4 text-left text-sm font-semibold">
+    <th 
+      className={`
+        px-6
+        py-4 
+        text-center 
+        text-sm 
+        font-semibold
+        ${theme === 'light' 
+          ? 'text-gray-700'
+          : 'text-gray-300'
+        }          
+      `}
+    >
       {value}
     </th>
   );
 }
 
 function TableData({ value }) {
+  const { theme } = useTheme();
+
   return (
-    <td className="px-6 py-5 text-sm">
+    <td 
+      className={`
+        px-6 
+        py-5 
+        text-sm
+        ${theme === 'light'
+          ? 'text-gray-500'
+          : 'text-gray-300'
+        }
+      `}
+    >
       {value}
     </td>
   );

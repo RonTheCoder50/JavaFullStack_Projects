@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const API = import.meta.env.VITE_API_URL;
+
 export async function signupAPI(info) {
     try {
         const newInfo = {
@@ -8,7 +10,7 @@ export async function signupAPI(info) {
             email: info.email.trim()
         }
 
-        const response = await axios.post(`http://localhost:8080/user/signup`,  newInfo);
+        const response = await axios.post(`${API}/user/signup`,  newInfo);
         return response.data;
     } catch(e) {
         const errors = e.response?.data?.message;
@@ -28,19 +30,23 @@ export async function loginAPI(info) {
             password: info.password.trim(),
         }
 
-        const response = await axios.post(`http://localhost:8080/user/login`, newInfo);
+        const response = await axios.post(`${API}/user/login`, newInfo);
         return response;
     } catch(e) {
-        console.log(e.response.data);
+        if(e.response?.status === 403) {
+            alert('Invalid username or password!');
+        } else {
+            alert('Something went wrong!');
+        }
     }
 }
-
+ 
 export async function getStoreAnalyzedAPI(filename) {
     const token = localStorage.getItem('token');
 
     try {
         const response = await axios.get(
-            `http://localhost:8080/file/get`,
+            `${API}/file/get`,
             {
                 params: {
                     filename: filename
@@ -66,7 +72,7 @@ export async function analyzedResumeAPI(file) {
 
     try {    
         const response = await axios.post(
-            `http://localhost:8080/file/upload`, 
+            `${API}/file/upload`, 
             formData,
             {
                 headers: {
@@ -86,7 +92,7 @@ export async function getUserDataAPI() {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
-            'http://localhost:8080/user/info',
+            `${API}/user/info`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -104,7 +110,7 @@ export async function viewRecentAnalysisAPI(filename) {
 
     try {
         const response = await axios.get(
-            `http://localhost:8080/file/view/${filename}`,
+            `${API}/file/view/${filename}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -122,7 +128,7 @@ export async function removeRecentAnalysisAPI(filename) {
     const token = localStorage.getItem('token');
     try {
         const response = await axios.delete(
-            `http://localhost:8080/file/remove/${filename}`,
+            `${API}/file/remove/${filename}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -139,7 +145,7 @@ export async function removeRecentAnalysisAPI(filename) {
 export async function getHistoryAnalysisAPI() {
     try {
         const response = await axios.get(
-            `http://localhost:8080/user/history`,
+            `${API}/user/history`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -158,7 +164,7 @@ export async function getHistoryAnalysisAPI() {
 export async function fetchAdminDataAPI() {
     try {
         const response = await axios.get(
-            'http://localhost:8080/admin-data',
+            `${API}/admin-data`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -176,7 +182,7 @@ export async function toggleBlockAPI(userId, username) {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.put(
-            'http://localhost:8080/block',
+            `${API}/block`,
             null,
             {
                 params: {
@@ -199,7 +205,7 @@ export async function removeUserAPI(userId, username) {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.delete(
-            'http://localhost:8080/remove',
+            `${API}/remove`,
             {
                 params: {
                     id: userId, 
@@ -221,7 +227,7 @@ export async function viewAnalysesAPI(userId, filename) {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
-            'http://localhost:8080/view',
+            `${API}/view`,
             {
                 params: {
                     id: userId,
@@ -244,7 +250,7 @@ export async function fetchUserChartAPI(type) {
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(
-            `http://localhost:8080/chart/user`,
+            `${API}/chart/user`,
             {
                 params: {
                     type: type
@@ -265,7 +271,7 @@ export async function fetchAnalysesChartAPI(type) {
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(
-            `http://localhost:8080/chart/analyses`,
+            `${API}/chart/analyses`,
             {
                 params: {
                     type: type
