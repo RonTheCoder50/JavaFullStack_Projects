@@ -7,10 +7,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class AnalysisResponseDto {
-    private String filename;
     private LocalDateTime date;
+    private String filename;
 
     @Column(columnDefinition = "TEXT")
     private String content;

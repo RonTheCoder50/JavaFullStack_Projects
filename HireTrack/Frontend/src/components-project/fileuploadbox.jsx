@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Upload, ImageIcon } from "lucide-react";
-import { analyzedResumeAPI, getStoreAnalyzedAPI } from "@/API";
+import { analyzedResumeAPI } from "@/API";
 import { useTheme } from "@/pages/theme";
 
-export default function FileUploadBox({ toggle }) {
+export default function FileUploadBox({ setLoading }) {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,54 +30,28 @@ export default function FileUploadBox({ toggle }) {
 
  
   async function analyzeApiCall(file) {
-    toggle();  //loading enable..
+    setLoading(true); // loading ON
+
     try {
-      //1. check catched in db is exist?
-      const analysis = await getStoreAnalyzedAPI(file?.name);
-      if(analysis) {
-        console.log("db cache response:", analysis);
-        navigate(
-          '/analysis-output',
-          {
-            state: {
-              response: JSON.parse(analysis.content),
-              filename: analysis.filename,
-              date: analysis.date,
-              from: location.pathname
-            }
-          }
-        );
-        
-        return;
-      }
-
-      //2. AI response
       const response = await analyzedResumeAPI(file);
-      console.log('anlysis response: ', response);
 
-      if(response !== null && response !== undefined) {
-        navigate(
-          '/analysis-output',
-          {
-            state: {
-              response,
-              filename: file?.name,
-              from: location.pathname
-            }
-          }
-        );
+      if (response) {
+        navigate('/analysis-output', {
+          state: {
+            response,
+            filename: file?.name,
+            from: location.pathname,
+          },
+        });
       }
-    } catch(e) {
-      alert(`Limit Exceed!`);
-      console.log(e);
+    } catch (err) {
+      alert('daily ' + err.response?.data?.message || 'limit exceed!');
     } finally {
-      toggle();
+      setLoading(false); // loading OFF (always runs)
+      setSelectedFile(null);
+      setFileName('');
     }
-
-    setSelectedFile(null);
-    setFileName('');
   }
-
   return (
     <div className="w-full flex justify-center">
       <div

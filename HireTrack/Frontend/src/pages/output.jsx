@@ -9,7 +9,6 @@ import {
 import { Button } from "@base-ui/react/button";
 
 import { useLocation, useNavigate } from "react-router";
-import { Link } from "react-router";
 
 const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -20,20 +19,11 @@ export default function AnalysisOutputPage() {
   const data = location.state.response;
   const filename = location.state.filename;
 
-  const dt = (location.state.date 
-    ? location.state.date.split("T") 
-    : null
-  );
 
-  let rawDate; 
   let newDate = new Date();
-  rawDate = (dt !== null ? new Date(dt[0]) : newDate);
-  
-  const time = (dt !== null 
-    ? dt[1].substring(0, 8)
-    : `${newDate.getHours()} : ${newDate.getMinutes()}`
-  );
-  const date = `${rawDate.getDate()} ${month[rawDate.getMonth()]} ${rawDate.getFullYear()} `
+
+  const time = `${newDate.getHours()} : ${newDate.getMinutes()}`
+  const date = `${newDate.getDate()} ${month[newDate.getMonth()]} ${newDate.getFullYear()} `
 
   const scoreColor =
     data?.ats_score >= 80

@@ -11,7 +11,7 @@ import {
 } from "@/components-project/charts";
 import { useTheme } from "./theme";
 
-export default function DashBoardPage({ user, data, isLoad, toggleLoading, refresh}) {
+export default function DashBoardPage({ user, data, isLoad, setLoading, refresh}) {
     const { theme } = useTheme();
 
     //Admin dashboard
@@ -117,7 +117,7 @@ export default function DashBoardPage({ user, data, isLoad, toggleLoading, refre
                 </h1>
                 
                 <FileUploadBox 
-                    toggle={toggleLoading}
+                    setLoading={setLoading}
                 />
             </div>
 

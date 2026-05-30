@@ -8,7 +8,6 @@ import com.ron.backend.entity.Users;
 import com.ron.backend.exception.LimitExceedException;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.repository.*;
-import jakarta.transaction.Transactional;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
@@ -44,15 +43,16 @@ public class analyzeService {
     private AnalysisRepository analysisRepo;
 
     public String analyzeFile(MultipartFile file) throws UnSupportedMediaException, IOException {
-            if(checkValidity()) { //for checking today's limits
-                throw new LimitExceedException("limit exceeded!");
+            String dbResponse = getAnalysis(file.getOriginalFilename());
+            if(dbResponse != null) {
+                return dbResponse;
             }
 
             String content = extractTextFromFile(file);
             String aiResponse = geminiService.analyzeResume(content); //fetch analysis via ai..
 
             savedAnalysisData(file, aiResponse); //saved resume to DB.
-            return aiResponse; //return response to Frontend.
+            return aiResponse;
     }
 
     //saved data of analysis
@@ -68,8 +68,8 @@ public class analyzeService {
             analysis.setAts(ats);
             analysis.setUser(user);
 
-            updateUserDataTable();
-            updateUserHistoryTable(analysis); //add to history!
+            updateUserDataTable(); //update user info table.
+            updateUserHistoryTable(analysis); //add analysis to history.
             analysisRepo.save(analysis); //save analysis to DB.
         } catch(RuntimeException e) {
             throw new RuntimeException(e.getMessage());
@@ -130,30 +130,21 @@ public class analyzeService {
         return root != null ? root.asInt() : 0;
     }
 
-    public AnalysisResponseDto getAnalysis(String filename) {
-        try {
-            Users user = userRepo.findByUsername(getCurrentUser());
-            Long userId = user.getId();
+    public String getAnalysis(String filename) {
+        Users user = userRepo.findByUsername(getCurrentUser());
+        Long userId = user.getId();
 
-            if(checkValidity()) { //for checking today's limits
-                throw new LimitExceedException("limit exceeded!");
-            }
+        if(checkValidity()) { //for checking today's limits
+            throw new LimitExceedException("limit exceeded!");
+        }
 
-            Analysis analysis = analysisRepo.findByFilenameAndUserId(filename, userId);
-            if(analysis != null){
-                AnalysisResponseDto dto = new AnalysisResponseDto();
-                dto.setContent(analysis.getContent());
-                dto.setFilename(analysis.getFilename());
-                dto.setDate(analysis.getDate());
-
-                updateUserDataTable();
-                updateUserHistoryTable(analysis);
-                return dto;
-            } else {
-                return null;
-            }
-        } catch(Exception e){
-            throw new RuntimeException("something went wrong" + e.getMessage());
+        Analysis analysis = analysisRepo.findByFilenameAndUserId(filename, userId);
+        if(analysis != null){
+            updateUserDataTable();
+            updateUserHistoryTable(analysis);
+            return analysis.getContent();
+        } else {
+            return null;
         }
     }
 

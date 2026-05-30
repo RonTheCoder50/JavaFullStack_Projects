@@ -1,6 +1,5 @@
 package com.ron.backend.controller;
 
-import com.ron.backend.dto.AnalysisResponseDto;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.service.analyzeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +18,6 @@ public class analyzeController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws UnSupportedMediaException, IOException {
         return ResponseEntity.status(200).body(service.analyzeFile(file));
-    }
-
-    @GetMapping("/get")
-    public ResponseEntity<?> getAnalysis(
-            @RequestParam String filename
-    ) {
-        AnalysisResponseDto dto = service.getAnalysis(filename);
-        if (dto == null) {
-            return ResponseEntity.status(404).body(null);
-        }
-
-        return ResponseEntity.status(200).body(dto);
     }
 
     @GetMapping("/view/{filename}")

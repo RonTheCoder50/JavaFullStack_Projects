@@ -40,52 +40,24 @@ export async function loginAPI(info) {
         }
     }
 }
- 
-export async function getStoreAnalyzedAPI(filename) {
-    const token = localStorage.getItem('token');
-
-    try {
-        const response = await axios.get(
-            `${API}/file/get`,
-            {
-                params: {
-                    filename: filename
-                },
-                
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-            },
-        );
-
-        console.log(response?.data);
-        return response.data;
-    } catch(err) {
-        console.log(err.response?.data);
-    }
-}
 
 export async function analyzedResumeAPI(file) {
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append("file", file);
+    
+    const response = await axios.post(
+        `${API}/file/upload`, 
+        formData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        }
+    );
 
-    try {    
-        const response = await axios.post(
-            `${API}/file/upload`, 
-            formData,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-            }
-        );
-
-        console.log('response: ', response);
-        return response.data;
-    } catch(err) {
-        alert('daily ' + err.response?.data?.message);
-    }
+    console.log('response: ', response);
+    return response.data;
 }
 
 export async function getUserDataAPI() {

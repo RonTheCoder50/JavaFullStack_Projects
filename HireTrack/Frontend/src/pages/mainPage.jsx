@@ -134,7 +134,7 @@ export default function MainPage() {
                 flex 
                 flex-col 
                 gap-14 
-                 ${theme === 'light' ? 'bg-gray-100' : 'bg-zinc-900'}
+                 ${theme === 'light' ? 'bg-gray-50' : 'bg-zinc-900'}
             `}
         >
             <NavbarPage 
@@ -148,7 +148,7 @@ export default function MainPage() {
                     user={user}
                     data={isCurrentAdmin?.length === 1 ? adminData : data}
                     isLoad={loading}
-                    toggleLoading={handleLoading}
+                    setLoading={setLoading}
                     refresh={isCurrentAdmin?.length === 1
                         ? fetchAdminData 
                         : fetchUserData
