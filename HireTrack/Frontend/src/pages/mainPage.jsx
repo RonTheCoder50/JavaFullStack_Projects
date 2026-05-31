@@ -11,7 +11,8 @@ import {
 import {
     getHistoryAnalysisAPI,
     getUserDataAPI,
-    fetchAdminDataAPI 
+    fetchAdminDataAPI, 
+    fetchUserDataListAPI
 } from "@/API";
 import PriceSection from "./pricePage";
 import { useTheme } from "./theme";
@@ -23,8 +24,13 @@ export default function MainPage() {
     const [adminData, setAdminData] = useState(null);
     const [loading, setLoading] = useState(false); 
 
+    const [userDataList, setUserDataList] = useState(null);
+    const [sortBy, setSortBy] = useState('id');
+    const [order, setOrder] = useState('asc');
+    const [page, setPage] = useState(0);
+
     const user = JSON.parse(localStorage.getItem('user'));
-    const isCurrentAdmin =  user?.roles.filter(role => role === 'ROLE_ADMIN');
+    const isCurrentAdmin = user?.roles.filter(role => role === 'ROLE_ADMIN');
 
     const [searchInput, setSearchInput] = useState('');
     const filterData = adminData?.userDataList?.filter(
@@ -45,13 +51,7 @@ export default function MainPage() {
 
     useEffect(() => {
         fetchAdminData();
-    }, []);
-
-    useEffect(() => {
         fetchHistoryData();
-    }, []);
-
-    useEffect(() => {
         fetchUserData();
     }, []);
 
@@ -64,11 +64,21 @@ export default function MainPage() {
             : localStorage.setItem('block', 'Active')
         }
     }, [data]);
-    
 
-    function handleLoading() {
-        setLoading(!loading);
-    }
+    useEffect(() => {
+        async function fetchUserDataList() {
+            const response = await fetchUserDataListAPI(searchInput, page, 5, sortBy, order);
+            if(response) {
+                setUserDataList(response);
+            }
+        }
+
+        if(status === 'userdata') {
+            fetchUserDataList();
+        }
+    }, [status, searchInput, sortBy, order, page]);
+    
+    
 
     async function fetchUserData() {
         try {
@@ -113,9 +123,33 @@ export default function MainPage() {
 
     function handleSearchInput(e) {
         const val = e.target.value;
-        console.log('input value: ', val);
-        console.log('filter search data: ', filterData);
         setSearchInput(val);
+    }
+
+    function handleSortBy(val) {
+        setSortBy(val);
+    }
+    function handleOrder(val) {
+        setOrder(val);
+    }
+
+    function handlePage(val) {
+        const first = userDataList?.first;
+        const last = userDataList?.last;
+        
+        if(val.trim() === 'prev') {
+            if(first) {
+                setPage(userDataList?.totalPages-1 || 0);
+            } else {
+                setPage(userDataList?.pageable?.pageNumber-1);
+            }
+        } else {
+            if(last) {
+                setPage(0);
+            } else {
+                setPage(userDataList?.pageable?.pageNumber+1);
+            }
+        }
     }
 
     if(localStorage.getItem('block') === 'Blocked') {
@@ -164,15 +198,22 @@ export default function MainPage() {
             }
 
             {status === 'userdata' && 
-                <UserInfoTable 
+                userDataList 
+                ? <UserInfoTable 
                     refresh={fetchAdminData}
-                    data={filterData?.length > 0 
-                        ? filterData 
-                        : adminData?.userDataList
-                    }
+                    data={userDataList?.content}
                     value={searchInput}
                     handleInput={handleSearchInput}
+                    sortBy={sortBy}
+                    order={order}
+                    handleSortBy={handleSortBy}
+                    handleOrder={handleOrder}
+                    page={page}
+                    handlePage={handlePage}
                 />
+                : <p className="text-center text-2xl font-medium mt-14">
+                    Loading....
+                </p>
             }
 
             {status === 'analyses' && 

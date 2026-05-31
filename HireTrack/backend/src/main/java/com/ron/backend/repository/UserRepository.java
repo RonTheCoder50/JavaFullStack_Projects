@@ -2,6 +2,8 @@ package com.ron.backend.repository;
 
 import com.ron.backend.entity.Users;
 import com.ron.backend.model.ChartDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,4 +36,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
         ORDER BY MONTH(date_of_joining)
     """, nativeQuery = true)
     List<ChartDto> getYearlyUserCountAnalysis();
+
+    Page<Users> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 }

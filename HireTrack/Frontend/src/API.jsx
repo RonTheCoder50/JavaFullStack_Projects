@@ -217,6 +217,32 @@ export async function viewAnalysesAPI(userId, filename) {
     }
 }
 
+export async function fetchUserDataListAPI(keyword, page, size, sortBy, direction) {
+    try {
+        const response = await axios.get(
+            'http://localhost:8080/users',
+            {
+                params: {
+                    keyword: keyword,
+                    page: page,
+                    size: size,
+                    sortBy: sortBy,
+                    direction: direction
+                },
+
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        );
+
+        console.log('pagination userdata: ', response);
+        return response.data;
+    } catch(err) {
+        alert(err.response?.data || 'something went wrong.');
+    }
+}
+
 //Chart API
 export async function fetchUserChartAPI(type) {
     const token = localStorage.getItem('token');

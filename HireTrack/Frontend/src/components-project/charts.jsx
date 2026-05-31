@@ -46,7 +46,6 @@ export function DashboardUserGrowthChart() {
             value={type}
             onChange={(e) => {
               setType(e.target.value);
-              console.log(e.target.value);
             }}
             className={`
               p-1 border

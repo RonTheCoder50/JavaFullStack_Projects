@@ -13,6 +13,7 @@ import { useTheme } from "./theme";
 
 export default function DashBoardPage({ user, data, isLoad, setLoading, refresh}) {
     const { theme } = useTheme();
+    
 
     //Admin dashboard
     if(user.roles?.includes('ROLE_ADMIN')) {

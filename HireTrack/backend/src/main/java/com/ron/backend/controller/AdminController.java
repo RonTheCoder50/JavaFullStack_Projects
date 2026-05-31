@@ -2,8 +2,12 @@ package com.ron.backend.controller;
 
 import com.ron.backend.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/")
@@ -41,6 +45,7 @@ public class AdminController {
         };
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/block")
     public ResponseEntity<?> toggleBlockUser(
             @RequestParam Long id,
@@ -63,5 +68,22 @@ public class AdminController {
             @RequestParam String filename
     ) {
         return ResponseEntity.ok(service.getAnalysis(id, filename));
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getUsers (
+        @RequestParam(defaultValue = "") String keyword,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        return ResponseEntity.ok(
+                service.getUsersList(keyword, page, size, sort)
+        );
     }
 }

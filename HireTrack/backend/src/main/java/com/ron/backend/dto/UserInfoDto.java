@@ -3,6 +3,7 @@ package com.ron.backend.dto;
 // note -> this dto is made specially for admin panel to analyze and control each user!
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserInfoDto {
     private Long userId;
     private String username;

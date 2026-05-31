@@ -12,6 +12,10 @@ import com.ron.backend.repository.AnalysisRepository;
 import com.ron.backend.repository.UserDataRepository;
 import com.ron.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -268,5 +272,44 @@ public class AdminService {
         } catch(Exception e) {
             throw new RuntimeException("something went wrong" + e.getMessage());
         }
+    }
+
+    //pagination service
+    public Page<UserInfoDto> getUsersList(
+            String keyword,
+            int page,
+            int size,
+            Sort sort
+    ) {
+        Pageable pageable =
+                            PageRequest.of(
+                                    page,
+                                    size,
+                                    sort
+                            );
+
+        Page<Users> userPage = (keyword.isBlank()
+                ? userRepo.findAll(pageable)
+                : userRepo.findByUsernameContainingIgnoreCase(keyword, pageable)
+        );
+        Page<UserInfoDto> dtoPage =
+            userPage.map(user -> {
+                UserInfoDto dto = new UserInfoDto();
+                UserData userData = userDataRepo.findByUserId(user.getId());
+
+                dto.setUsername(user.getUsername());
+                dto.setUserId(user.getId());
+                dto.setDateOfJoining(user.getDateOfJoining());
+                dto.setRoles(user.getRoles());
+
+                dto.setPlan(userData.getPlan());
+                dto.setAvgAtsScore(userData.getAvgAtsScore());
+                dto.setTotalAnalyses(userData.getTotalAnalysis());
+                dto.setIsBlock(userData.getBlock());
+
+                return dto;
+            });
+
+        return dtoPage;
     }
 }

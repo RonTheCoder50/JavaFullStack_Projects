@@ -2,8 +2,11 @@ import { removeRecentAnalysisAPI, removeUserAPI, viewRecentAnalysisAPI } from "@
 import { Eye, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 
+import { Button } from "@base-ui/react/button";
+
 import { toggleBlockAPI, viewAnalysesAPI } from "@/API";
 import { useTheme } from "@/pages/theme";
+import { useState } from "react";
 
 export function HistoryTable({ data, refresh }) {
   const navigate = useNavigate();
@@ -231,8 +234,19 @@ export function HistoryTable({ data, refresh }) {
   );
 }
 
-export function UserInfoTable({ refresh, data, value, handleInput }) {
-
+export function UserInfoTable({ 
+  refresh,
+  data, 
+  value, 
+  handleInput, 
+  sortBy, 
+  order,
+  handleSortBy,
+  handleOrder,
+  page,
+  handlePage
+}) {
+  
   data = data?.filter(user => !user.roles?.includes('ROLE_ADMIN'));
   const { theme } = useTheme();
 
@@ -264,27 +278,67 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
 
   return (
     <div className="w-full max-w-[97%] mx-auto flex flex-col gap-6 overflow-x-auto rounded-2xl border border-gray-200 shadow-sm mb-4">
-      <div className="pt-4 flex justify-around items-center">
+      <div className="pt-4 flex justify-between px-6 items-center">
         <h1 className="text-lg md:text-xl font-bold tracking-wide">
           USER INFO CHART
         </h1>
 
-        <input
-          onChange={handleInput}
-          value={value}
-          type="text" 
-          className={`
-            border
-          border-gray-400
-          focus:border-gray-950 
-            focus:ring-2 
-          ring-sky-400 
-            py-1 px-3 
-            rounded-md
-          `}
+        <div className="flex items-center gap-3">
+          <input
+            onChange={handleInput}
+            value={value}
+            type="text" 
+            className={`
+              border
+            border-gray-500
+            focus:border-gray-950 
+              focus:ring-2 
+            ring-sky-400 
+              py-1 px-3 
+              rounded-md
+            `}
 
-          placeholder="search by username"
-        />
+            placeholder="search by username"
+          />
+
+          <select 
+            value={sortBy}
+            onChange={(e) => {
+              handleSortBy(e.target.value)
+              console.log(e.target.value);
+            }}
+
+            className={`
+              p-2 border rounded-md
+              ${theme === 'light' 
+                ? 'bg-white text-black'
+                : 'bg-black text-white'
+              }
+            `}
+          >
+            <option value="id">user id</option>
+            <option value="username">username</option>
+            <option value="dateOfJoining">dateOfJoining</option>
+            <option value="plan">plan</option>
+          </select>
+
+          <select 
+            value={order}  
+            onChange={(e) => {
+              handleOrder(e.target.value);
+            }}
+            className={`
+              p-2 border rounded-md
+              ${theme === 'light' 
+                ? 'bg-white text-black'
+                : 'bg-black text-white'
+              }
+            `}
+          >
+           <option value="asc">ascending</option>
+           <option value="desc">descending</option>
+          </select>
+        </div>
       </div>
 
       <table className="w-full min-w-[900px] border-collapse">
@@ -442,7 +496,48 @@ export function UserInfoTable({ refresh, data, value, handleInput }) {
         </tbody>
 
       </table>
+      
+      <div className="flex items-center justify-center gap-6 mb-4">
+        <button
+          onClick={() => handlePage('prev')}
+          disabled={page === 0}
+          className={`
+            px-4 py-1 rounded-md border transition
+            disabled:opacity-50 disabled:cursor-not-allowed
+            ${
+              theme === 'light'
+                ? 'bg-white text-black hover:bg-gray-100'
+                : 'bg-black text-white hover:bg-zinc-900'
+            }
+          `}
+        >
+          ← Prev
+        </button>
 
+        <span
+          className={`font-medium ${
+            theme === 'light' ? 'text-black' : 'text-white'
+          }`}
+        >
+          Page {page + 1}
+        </span>
+
+        <button
+          onClick={() => handlePage('next')}
+          disabled={data?.last}
+          className={`
+            px-4 py-1 rounded-md border transition
+            disabled:opacity-50 disabled:cursor-not-allowed
+            ${
+              theme === 'light'
+                ? 'bg-white text-black hover:bg-gray-100'
+                : 'bg-black text-white hover:bg-zinc-900'
+            }
+          `}
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 }
