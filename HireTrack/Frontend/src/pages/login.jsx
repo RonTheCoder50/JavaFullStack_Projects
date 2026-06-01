@@ -85,10 +85,13 @@ export default function LoginPage() {
                     />
                 </div>
 
-                <PasswordInput 
-                    value={info.password}
-                    onChange={handlePassword}
-                />
+                <div className="space-y-2">
+                    <Label>Password</Label>
+                    <PasswordInput 
+                        value={info.password}
+                        onChange={handlePassword}
+                    />
+                </div>
 
                 <Button className="w-full" onClick={(e) => handleSubmit(e)}>
                     Login

@@ -86,4 +86,21 @@ public class AdminController {
                 service.getUsersList(keyword, page, size, sort)
         );
     }
+
+    @GetMapping("/analyses")
+    public ResponseEntity<?> getAnalyses (
+        @RequestParam(defaultValue = "") String keyword,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        return ResponseEntity.ok(
+                service.getAnalysesList(keyword, page, size, sort)
+        );
+    }
 }

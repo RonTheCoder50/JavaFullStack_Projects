@@ -2,6 +2,8 @@ package com.ron.backend.repository;
 
 import com.ron.backend.entity.Analysis;
 import com.ron.backend.model.ChartDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -70,4 +72,6 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
     List<ChartDto> getYearlyAnalysesCount();
 
     List<Analysis> findByUser_Id(Long userId);
+
+    Page<Analysis> findByFilenameContainingIgnoreCase(String filename, Pageable page);
 }

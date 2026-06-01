@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import NavbarPage from "./navbar"
 import DashBoardPage from "./dashboard"
 
@@ -19,24 +19,21 @@ import { useTheme } from "./theme";
 
 export default function MainPage() {
     const [status, setStatus] = useState('dashboard'); //dashboar, history, pricing.
-    const [historyData, setHistoryData] = useState(null);
     const [data, setData] = useState(null); //userData!
+    const [historyData, setHistoryData] = useState(null);
     const [adminData, setAdminData] = useState(null);
     const [loading, setLoading] = useState(false); 
+    const [searchInput, setSearchInput] = useState('');
+    const { theme } = useTheme();
 
-    const [userDataList, setUserDataList] = useState(null);
+    //pagination dynamic data for (admin -> userlist, analysislist)  
+    const [dynamicData, setDynamicData] = useState(null); 
     const [sortBy, setSortBy] = useState('id');
     const [order, setOrder] = useState('asc');
     const [page, setPage] = useState(0);
 
     const user = JSON.parse(localStorage.getItem('user'));
     const isCurrentAdmin = user?.roles.filter(role => role === 'ROLE_ADMIN');
-
-    const [searchInput, setSearchInput] = useState('');
-    const filterData = adminData?.userDataList?.filter(
-        user => user.username.toLowerCase()
-        .includes(searchInput.toLowerCase())
-    );
 
     const filterAnalysisData = adminData?.analysesDataList?.filter(
         analysis =>
@@ -47,11 +44,7 @@ export default function MainPage() {
                 .includes(searchInput.toLowerCase())
     );
 
-    const { theme } = useTheme();
-
     useEffect(() => {
-        fetchAdminData();
-        fetchHistoryData();
         fetchUserData();
     }, []);
 
@@ -66,10 +59,16 @@ export default function MainPage() {
     }, [data]);
 
     useEffect(() => {
+        if(isCurrentAdmin.length > 0 && adminData === null) {
+            fetchAdminData();
+        }
+    }, [isCurrentAdmin, adminData]);
+
+    useEffect(() => {
         async function fetchUserDataList() {
             const response = await fetchUserDataListAPI(searchInput, page, 5, sortBy, order);
             if(response) {
-                setUserDataList(response);
+                setDynamicData(response);
             }
         }
 
@@ -77,9 +76,39 @@ export default function MainPage() {
             fetchUserDataList();
         }
     }, [status, searchInput, sortBy, order, page]);
-    
-    
 
+    //pagination + sort + search for user -> history analyses table
+    const fetchHistoryData = useCallback(async () => {
+        if(historyData?.length === 1) return;
+        const response = await getHistoryAnalysisAPI(
+            searchInput,
+            page,
+            10,
+            sortBy,
+            order
+        );
+
+        if(response) {
+            setHistoryData(response);
+        }
+    }, [searchInput, page, sortBy, order]);
+
+    useEffect(() => {
+        if(status !== 'history') return;
+
+        fetchHistoryData();
+    }, [status, fetchHistoryData]);
+
+    async function fetchAdminData() {
+        const response = await fetchAdminDataAPI();
+        if(response) {
+            setAdminData(response);
+            console.log('admin data: ', response);
+        } else {
+            alert('failed to fetch user count!');
+        }
+    }
+    
     async function fetchUserData() {
         try {
             setLoading(true);
@@ -95,29 +124,8 @@ export default function MainPage() {
         }
     }
 
-    async function fetchAdminData() {
-        const response = await fetchAdminDataAPI();
-        if(response) {
-            setAdminData(response);
-            console.log('admin data: ', response);
-        } else {
-            alert('failed to fetch user count!');
-        }
-    }
-
-    async function fetchHistoryData() {
-        try {
-            const data = await getHistoryAnalysisAPI();
-            setHistoryData(data);
-        } catch(err) {
-            console.log(err);
-        }
-    }
-
-    function handleStatus(val) {
-        if(val === undefined || val === status) {
-            return;
-        }
+    const handleStatus = (val) => {
+        if (val === undefined || val === status) return;
         setStatus(val);
     }
 
@@ -134,20 +142,27 @@ export default function MainPage() {
     }
 
     function handlePage(val) {
-        const first = userDataList?.first;
-        const last = userDataList?.last;
+        const first = dynamicData?.first;
+        const last = dynamicData?.last;
+
+        let pgdata;
+        if(status === 'userdata' || status === 'analyses') {
+            pgdata = dynamicData;
+        } else {
+            pgdata = historyData;
+        }
         
         if(val.trim() === 'prev') {
             if(first) {
-                setPage(userDataList?.totalPages-1 || 0);
+                setPage(pgdata?.totalPages-1 || 0);
             } else {
-                setPage(userDataList?.pageable?.pageNumber-1);
+                setPage(pgdata?.pageable?.pageNumber-1);
             }
         } else {
             if(last) {
                 setPage(0);
             } else {
-                setPage(userDataList?.pageable?.pageNumber+1);
+                setPage(pgdata?.pageable?.pageNumber+1);
             }
         }
     }
@@ -191,17 +206,34 @@ export default function MainPage() {
             }
             
             {status === 'history' && 
-                <HistoryTable
-                    data={historyData}
+                historyData
+                ? <HistoryTable
+                    data={historyData?.content}
                     refresh={fetchHistoryData}
+
+                    value={searchInput}
+                    handleInput={handleSearchInput}
+
+                    sortBy={sortBy}
+                    handleSortBy={handleSortBy}
+
+                    order={order}
+                    handleOrder={handleOrder}
+
+                    page={page}
+                    handlePage={handlePage}
+                    isLastPage={historyData?.last}
                 />
+                : status === 'history' && <p className="text-center text-2xl font-medium mt-14">
+                    Loading...
+                </p>
             }
 
             {status === 'userdata' && 
-                userDataList 
+                dynamicData
                 ? <UserInfoTable 
                     refresh={fetchAdminData}
-                    data={userDataList?.content}
+                    data={dynamicData?.content}
                     value={searchInput}
                     handleInput={handleSearchInput}
                     sortBy={sortBy}
@@ -211,8 +243,8 @@ export default function MainPage() {
                     page={page}
                     handlePage={handlePage}
                 />
-                : <p className="text-center text-2xl font-medium mt-14">
-                    Loading....
+                : status === 'userdata' && <p className="text-center text-2xl font-medium mt-14">
+                    Loading...
                 </p>
             }
 

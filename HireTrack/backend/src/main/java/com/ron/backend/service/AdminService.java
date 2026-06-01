@@ -67,7 +67,6 @@ public class AdminService {
                 ))
         );
 
-        adminDataDTO.setUserDataList(getAllUserInfo()); //total userinfo for admin panel.
         adminDataDTO.setAnalysesDataList(getAllAnalysesData());
         return adminDataDTO;
     }
@@ -189,30 +188,6 @@ public class AdminService {
         return new ChartDto("PRO", count);
     }
 
-    public List<UserInfoDto> getAllUserInfo() {
-         List<UserData> data = userDataRepo.findAll();
-         List<UserInfoDto> result = new ArrayList<>();
-
-         for(UserData userData : data) {
-             Users user = userData.getUser();
-
-             UserInfoDto userInfoDto = new UserInfoDto();
-             userInfoDto.setUsername(user.getUsername());
-             userInfoDto.setUserId(user.getId());
-
-             userInfoDto.setPlan(userData.getPlan());
-             userInfoDto.setDateOfJoining(user.getDateOfJoining());
-             userInfoDto.setAvgAtsScore(userData.getAvgAtsScore());
-             userInfoDto.setTotalAnalyses(userData.getTotalAnalysis());
-             userInfoDto.setIsBlock(userData.getBlock() != null && userData.getBlock());
-             userInfoDto.setRoles(user.getRoles());
-
-             result.add(userInfoDto);
-         }
-
-         return result;
-    }
-
     //block - unblock api
     public String toggleBlock(Long id, String username) {
         UserData userData = userDataRepo.findByUserId(id);
@@ -311,5 +286,36 @@ public class AdminService {
             });
 
         return dtoPage;
+    }
+
+    public Page<AnalysesTableDto> getAnalysesList(
+            String keyword,
+            int page,
+            int size,
+            Sort sort
+    ) {
+        Pageable pageable =
+                PageRequest.of(
+                        page,
+                        size,
+                        sort
+                );
+
+        Page<Analysis> analysisPage = (keyword.isBlank()
+                ? analysisRepo.findAll(pageable)
+                : analysisRepo.findByFilenameContainingIgnoreCase(keyword, pageable)
+        );
+
+        return (
+             analysisPage.map(obj -> {
+                AnalysesTableDto dto = new AnalysesTableDto();
+                dto.setUid(obj.getUser().getId());
+                dto.setUsername(obj.getUser().getUsername());
+                dto.setFilename(obj.getFilename());
+                dto.setAts(obj.getAts());
+                dto.setTime(obj.getDate());
+                return dto;
+            })
+        );
     }
 }

@@ -12,8 +12,10 @@ import com.ron.backend.repository.HistoryRepository;
 import com.ron.backend.repository.UserDataRepository;
 import com.ron.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -182,25 +184,33 @@ public class UserService {
 
             recentActivity.add(hDto);
         });
-        response.setAnalysisHistory(recentActivity);
 
+        response.setAnalysisHistory(recentActivity);
         return ResponseEntity.status(200).body(response);
     }
 
-    public List<HistoryResponseDto> getHistory() {
+    public Page<HistoryResponseDto> getHistoryList(
+        String keyword,
+        int page,
+        int size,
+        Sort sort
+    ) {
         Users user = userRepo.findByUsername(aService.getCurrentUser());
-        List<UserHistory> history = historyRepo.findByUser_IdOrderByDateDesc(user.getId());
 
-        List<HistoryResponseDto> recentActivity = new ArrayList<>();
-        history.forEach(userHistory -> {
-            HistoryResponseDto hDto = new HistoryResponseDto();
-            hDto.setDate(userHistory.getDate());
-            hDto.setFileName(userHistory.getFileName());
-            hDto.setAvgAtsScore(userHistory.getAts());
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<UserHistory> historyList = (keyword.isBlank()
+            ? historyRepo.findAllByUser_Id(user.getId(), pageable)
+            : historyRepo.findByUser_IdAndFileNameContainingIgnoreCase(user.getId(), keyword, pageable)
+        );
 
-            recentActivity.add(hDto);
-        });
-
-        return recentActivity;
+        return (
+                historyList.map(hAnalysis -> {
+                    HistoryResponseDto hDto = new HistoryResponseDto();
+                    hDto.setDate(hAnalysis.getDate());
+                    hDto.setFileName(hAnalysis.getFileName());
+                    hDto.setAvgAtsScore(hAnalysis.getAts());
+                    return hDto;
+                })
+        );
     }
 }

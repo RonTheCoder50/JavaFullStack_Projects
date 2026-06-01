@@ -114,17 +114,32 @@ export async function removeRecentAnalysisAPI(filename) {
     }
 }
 
-export async function getHistoryAnalysisAPI() {
+export async function getHistoryAnalysisAPI(
+    keyword,
+    page, 
+    size, 
+    sortBy, 
+    direction
+) {
     try {
         const response = await axios.get(
             `${API}/user/history`,
             {
+                params: {
+                    keyword: keyword,
+                    page: page,
+                    size: size,
+                    sortBy: sortBy,
+                    direction: direction
+                },
+
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             }
         );
         
+        console.log('user-history analysis list:', response);
         return response?.data;
     } catch(err) {
         console.log(err.response?.data);
@@ -236,7 +251,6 @@ export async function fetchUserDataListAPI(keyword, page, size, sortBy, directio
             }
         );
 
-        console.log('pagination userdata: ', response);
         return response.data;
     } catch(err) {
         alert(err.response?.data || 'something went wrong.');

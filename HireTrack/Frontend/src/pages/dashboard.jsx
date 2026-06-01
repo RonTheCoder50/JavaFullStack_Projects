@@ -1,6 +1,6 @@
 import FileUploadBox from "@/components-project/fileuploadbox";
-import { HistoryTable } from "@/components-project/tables";
 import HeroCard from "@/components-project/herocard";
+import { DashBoardHistoryFunc } from "@/components-project/tables";
 
 import { TailSpin } from "react-loader-spinner";
 
@@ -128,7 +128,7 @@ export default function DashBoardPage({ user, data, isLoad, setLoading, refresh}
                     Recent Activity
                 </h1>
                 
-                <HistoryTable
+                <DashBoardHistoryFunc 
                     data={data?.analysisHistory}
                     refresh={() => refresh()}
                 />

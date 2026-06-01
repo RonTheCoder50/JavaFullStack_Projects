@@ -2,6 +2,8 @@ package com.ron.backend.repository;
 
 import com.ron.backend.entity.UserHistory;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,12 @@ public interface HistoryRepository extends JpaRepository<UserHistory, Integer> {
     void deleteByUser_IdAndFileName(Long userId, String fileName);
 
     UserHistory findByUser_IdAndFileName(Long userId, String fileName);
+
+    Page<UserHistory> findByUser_IdAndFileNameContainingIgnoreCase(
+            Long userId,
+            String fileName,
+            Pageable pageable
+    );
+
+    Page<UserHistory> findAllByUser_Id(Long userId, Pageable pageable);
 }

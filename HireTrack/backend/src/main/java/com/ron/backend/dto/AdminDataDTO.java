@@ -22,6 +22,5 @@ public class AdminDataDTO {
     private Double avgAtsScore;
 
     List<ChartDto> planData;
-    List<UserInfoDto> userDataList;
     List<AnalysesTableDto> analysesDataList;
 }

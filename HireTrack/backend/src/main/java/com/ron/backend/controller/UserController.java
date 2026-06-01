@@ -8,6 +8,7 @@ import com.ron.backend.entity.Users;
 import com.ron.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,20 @@ public class UserController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<?> getUserHistory() {
-        return ResponseEntity.ok(userService.getHistory());
+    public ResponseEntity<?> getUserHistory(
+         @RequestParam(defaultValue = "") String keyword,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "id") String sortBy,
+         @RequestParam(defaultValue = "asc") String direction
+
+    ) {
+        Sort sort = direction.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        return ResponseEntity.ok(
+                userService.getHistoryList(keyword, page, size, sort)
+        );
     }
 }
