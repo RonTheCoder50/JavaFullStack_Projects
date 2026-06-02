@@ -21,7 +21,6 @@ export default function IntroPage() {
       `}
     >
       
-      {/* Navbar */}
       <header className="w-full flex items-center justify-between px-8 py-5 border-b backdrop-blur-sm">
         <h1 
           className={`
@@ -70,30 +69,30 @@ export default function IntroPage() {
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-3xl text-center space-y-6">
           
-          <div 
-            className={`
+        <div className={`
               inline-flex
               items-center
-              rounded-full 
-              border 
-              px-4 
-              py-1 
-              text-sm  
+              rounded-full
+              border
+              border-blue-500/50
+              px-4
+              py-1
+              text-sm
               shadow-sm
+              animate-pulse
               ${theme === 'light'
-                ? 'text-gray-600 bg-white'
-                : 'text-gray-200 bg-zinc-800'
+                ? 'bg-white text-gray-600'
+                : 'bg-zinc-800 text-gray-200'
               }
             `}
-          >
+         >
             AI Powered Resume Analyzer
-          </div>
+        </div>
 
           <h2 
             className={`
               text-4xl
-              lg:text-5xl 
-              md:text-6xl 
+              md:text-5xl 
               font-bold 
               tracking-tight 
               leading-tight
@@ -107,10 +106,32 @@ export default function IntroPage() {
             <span className="text-blue-600"> Your Resume</span>
           </h2>
 
-          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            Upload your resume and get instant ATS analysis,
-            improvement suggestions, and smart tracking with HireTrack.
+          <p className="text-base text-gray-600 leading-relaxed max-w-2xl mx-auto ">
+            Upload your resume and receive an instant ATS score, detailed AI-powered feedback, keyword optimization suggestions, and personalized recommendations to help your resume pass applicant tracking systems and stand out to recruiters.
           </p>
+
+          <div className="w-full flex flex-wrap justify-center gap-3 pt-2 ">
+            {[
+              "ATS Score",
+              "AI Feedback",
+              "Resume Tracking",
+              "Secure Account",
+              "Analysis History"
+            ].map((item) => (
+              <span
+                key={item}
+                className={`
+                  px-4 py-2 rounded-full text-sm border
+                  ${theme === 'light'
+                    ? 'bg-white text-gray-700'
+                    : 'bg-zinc-800 text-gray-200 border-zinc-700'
+                  }
+                `}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
 
           <div className="flex items-center justify-center gap-4 pt-4">
             <Link to="/signup">
@@ -133,6 +154,22 @@ export default function IntroPage() {
               </Button>
             </Link>
           </div>
+
+          <p
+            className={`
+              relative
+              text-center
+              text-sm 
+              mt-16
+              ${theme === 'light'
+                ? 'text-gray-500'
+                : 'text-gray-400'
+              }
+            `}
+          >
+            No complicated setup. Create an account, upload your resume,
+            and receive actionable feedback in seconds.
+          </p>
         </div>
       </main>
     </section>
