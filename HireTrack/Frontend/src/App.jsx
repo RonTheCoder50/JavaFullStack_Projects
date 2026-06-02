@@ -4,11 +4,11 @@ import {Routes, Route} from "react-router-dom";
 import SignupPage from "./pages/signup";
 import LoginPage from "./pages/login";
 import IntroPage from "./pages/Intro";
-import MainPage from "./pages/mainPage";
-import DashBoardPage from "./pages/dashboard";
+
 import AnalysisOutputPage from "./pages/output";
 import ProfilePage from "./pages/profile";
 import ProtectedRoute from "./components-project/protectedRoute";
+import ManagerComponenet from "./pages/manage";
 
 function App() {
   return (
@@ -24,16 +24,7 @@ function App() {
         path="/main"
         element={
           <ProtectedRoute>
-            <MainPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashBoardPage />
+            <ManagerComponenet />
           </ProtectedRoute>
         }
       />

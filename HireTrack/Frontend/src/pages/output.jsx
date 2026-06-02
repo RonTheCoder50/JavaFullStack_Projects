@@ -16,8 +16,8 @@ export default function AnalysisOutputPage() {
   // backend response
   const location = useLocation();
   const navigate = useNavigate();
-  const data = location.state.response;
-  const filename = location.state.filename;
+  const data = location.state?.response;
+  const filename = location.state?.filename;
 
 
   let newDate = new Date();

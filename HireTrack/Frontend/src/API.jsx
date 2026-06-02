@@ -235,7 +235,7 @@ export async function viewAnalysesAPI(userId, filename) {
 export async function fetchUserDataListAPI(keyword, page, size, sortBy, direction) {
     try {
         const response = await axios.get(
-            'http://localhost:8080/users',
+            `${API}/users`,
             {
                 params: {
                     keyword: keyword,
@@ -254,6 +254,30 @@ export async function fetchUserDataListAPI(keyword, page, size, sortBy, directio
         return response.data;
     } catch(err) {
         alert(err.response?.data || 'something went wrong.');
+    }
+}
+
+export async function fetchAnalysesTableDataAPI(keyword, page, size, sortBy, direction) {
+    try {
+        const response = await axios.get(
+            `${API}/analyses`,
+            {
+                params: {
+                    keyword: keyword,
+                    page: page,
+                    size: size,
+                    sortBy: sortBy,
+                    direction: direction
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        );
+
+        return response?.data;
+    } catch(err) {
+        alert(err.response?.data || 'something went wrong!');
     }
 }
 

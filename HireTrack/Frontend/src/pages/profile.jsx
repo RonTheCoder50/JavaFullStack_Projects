@@ -14,6 +14,7 @@ export default function ProfilePage() {
             return;
         }
         localStorage.clear();
+        localStorage.setItem('theme', 'dark');
         navigate("/login");
     };
 

@@ -16,8 +16,14 @@ public class Analysis {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Column(name = "date")
     private LocalDateTime date;
+
+    @Column(name = "filename")
     private String filename;
+
+    @Column(name = "ats")
     private Integer ats;
 
     @ManyToOne(fetch = FetchType.LAZY)

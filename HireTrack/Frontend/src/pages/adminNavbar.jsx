@@ -1,31 +1,26 @@
-import { useState } from "react";
 import { FiMoon } from "react-icons/fi";
 import { 
     MdOutlineWbSunny,
     MdOutlineClear, 
     MdOutlineDashboard,
     MdOutlineHistory,
-    MdOutlinePriceCheck
 } from "react-icons/md";
+
+import { useTheme } from "./theme";
+import { useNavigate } from "react-router";
+import { useState } from "react";
 
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaRegUser } from "react-icons/fa6";
-import { useNavigate } from "react-router";
-import { useTheme } from "./theme";
 
-export default function NavbarPage({ data, status, handleStatus }) {
-    const { theme, toggleTheme } = useTheme();
-    const [sideToggle, isSideToggle] = useState(false);
+export default function AdminNavBar({ status, handleStatus }) {
+    const [sideToggle, setSideToggle] = useState(false);
     const user = JSON.parse(localStorage.getItem('user'));
+    const { theme, toggleTheme } = useTheme(); 
     const navigate = useNavigate();
-    const isAdmin =  user?.roles.filter(role => role === 'ROLE_ADMIN');
-    const defaultPage =
-        isAdmin?.length > 0
-        ? 'userdata'
-        : 'history';
 
     function toggleSideBar() {
-        isSideToggle(!sideToggle);
+        setSideToggle(!sideToggle);
     }
 
     return (
@@ -71,37 +66,47 @@ export default function NavbarPage({ data, status, handleStatus }) {
                     />
 
                     <div className="flex flex-col items-center gap-2 md:gap-8 lg:gap-12 xl:gap-14">
-                        <div onClick={() => handleStatus('dashboard')} 
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
+                        <div 
+                            onClick={
+                                () => handleStatus('dashboard')
+                            }
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm"
+                        >
                             <MdOutlineDashboard />
                             <span>
                                 Dashboard
                             </span>
                         </div>
 
-                        <div onClick={() => 
-                            handleStatus(defaultPage)
-                        }  
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
+                        <div 
+                            onClick={
+                                () => handleStatus('userdata')
+                            }
+
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm"
+                        >
                             <MdOutlineHistory />
                             <span className="text-base tracking-wide font-normal">
-                                {defaultPage 
-                                    ? 'Users Data'
-                                    : 'History'
-                                }
+                                Users Data
                             </span>
                         </div>
 
-                        <div onClick={() => handleStatus('pricing')} 
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
-                            <MdOutlinePriceCheck />
+                        <div
+                            onClick={
+                                () => handleStatus('analyses')
+                            }
+                        >
                             <span className="text-base tracking-wide font-normal">
-                                Pricing
+                                Users Analyses
                             </span>
                         </div>
 
-                        <div onClick={() => handleStatus('profile')} 
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
+                        <div 
+                            onClick={
+                                () => navigate('/profile')
+                            } 
+                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm"
+                        >
                             <FaRegUser />
                             <span className="text-base tracking-wide font-normal">
                                 Profile 
@@ -154,12 +159,12 @@ export default function NavbarPage({ data, status, handleStatus }) {
                 />
 
                 <NavBox
-                    value={isAdmin?.length > 0 ? 'userdata' : 'History'}
+                    value={'userdata'}
                     status={status}
                 />
                 
                 <NavBox
-                    value={isAdmin?.length > 0 ? 'analyses' : 'Pricing'}
+                    value={'analyses'}
                     status={status}
                 />
             </div>
@@ -168,7 +173,7 @@ export default function NavbarPage({ data, status, handleStatus }) {
                 <button 
                     onClick={() => navigate('/profile', {
                         state: {
-                            userdata: data
+                            userdata: user
                         }
                     })}
                     className="w-8 h-8 flex justify-center items-center rounded-full border hover:shadow-sm cursor-default hover:border-sky-400"
@@ -189,7 +194,7 @@ export default function NavbarPage({ data, status, handleStatus }) {
             </div>
         </nav>
         </>
-    )
+    );
 }
 
 function NavBox({ value, status }) {

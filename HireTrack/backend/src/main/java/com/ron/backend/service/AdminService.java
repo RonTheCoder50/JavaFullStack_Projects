@@ -309,8 +309,10 @@ public class AdminService {
         return (
              analysisPage.map(obj -> {
                 AnalysesTableDto dto = new AnalysesTableDto();
-                dto.setUid(obj.getUser().getId());
-                dto.setUsername(obj.getUser().getUsername());
+                Users user = userRepo.findByUsername(obj.getUser().getUsername());
+
+                dto.setUsername(user.getUsername());
+                dto.setUid(user.getId());
                 dto.setFilename(obj.getFilename());
                 dto.setAts(obj.getAts());
                 dto.setTime(obj.getDate());
