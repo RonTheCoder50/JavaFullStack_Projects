@@ -58,57 +58,69 @@ export default function UserNavbar({ status, handleStatus }) {
             />
 
             {sideToggle && 
-                <div className="absolute h-[95%] w-[95%] top-2 right-5 p-2 bg-gray-100/90 flex flex-col gap-4 shadow-md/30">
+                <div 
+                    className={`
+                        absolute 
+                        h-full 
+                        w-[95%] 
+                        top-2 
+                        right-5 
+                        p-2 
+                        flex flex-col 
+                        gap-4 
+                        shadow-md/30
+                        ${theme === 'light'
+                            ? 'bg-gray-100/90'
+                            : 'bg-zinc-900'
+                        }
+                    `}
+                >
                     <MdOutlineClear
                         onClick={() => toggleSideBar()}
                         size={28} 
                         className="m-2 hover:shadow-sm p-1 rounded-full"
                     />
 
-                    <div className="flex flex-col items-center gap-2 md:gap-8 lg:gap-12 xl:gap-14">
-                        <div onClick={() => handleStatus('dashboard')} 
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
-                            <MdOutlineDashboard />
-                            <span>
-                                Dashboard
-                            </span>
-                        </div>
+                    <div 
+                        onClick={() => toggleSideBar()}
+                        className="flex flex-col items-center gap-2 md:gap-8 lg:gap-12 xl:gap-14">
+                         
+                        <Box
+                            value={'Dashboard'}
+                            page={'dashboard'}
+                            Icon={MdOutlineDashboard}
+                            onSmash={handleStatus}
+                        />
 
-                        <div onClick={() => 
-                            handleStatus('history')
-                        }  
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
-                            <MdOutlineHistory />
-                            <span className="text-base tracking-wide font-normal">
-                                History
-                            </span>
-                        </div>
+                        <Box 
+                            value={'History'}
+                            page={'history'}
+                            Icon={MdOutlineHistory}
+                            onSmash={handleStatus}
+                        />
 
-                        <div onClick={() => handleStatus('pricing')} 
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
-                            <MdOutlinePriceCheck />
-                            <span className="text-base tracking-wide font-normal">
-                                Pricing
-                            </span>
-                        </div>
+                        <Box 
+                            value={'Pricing'}
+                            page={'pricing'}
+                            Icon={MdOutlinePriceCheck}
+                            onSmash={handleStatus}
+                        />
 
-                        <div onClick={() => handleStatus('profile')} 
-                            className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
-                            <FaRegUser />
-                            <span className="text-base tracking-wide font-normal">
-                                Profile 
-                            </span>
-                        </div>
+                        <Box 
+                            value={'Profile'}
+                            page={'profile'}
+                            Icon={FaRegUser}
+                            onSmash={handleStatus}
+                        />
 
-                        <div className="py-2 px-4 w-full bg-white shadow-sm hover:bg-gray-50 flex items-center gap-2 rounded-sm">
-                            {theme === 'light'
-                                ? <MdOutlineWbSunny />
-                                : <FiMoon />
+                        <Box 
+                            value={theme === 'light' ? 'Light' : 'Dark'}
+                            Icon={theme === 'light'
+                                ? MdOutlineWbSunny 
+                                : FiMoon 
                             }
-                            <span className="text-base tracking-wide font-normal">
-                                {theme === 'light' ? 'Light' : 'Dark'}
-                            </span>
-                        </div>
+                            onSmash={toggleTheme}
+                        />
                     </div>
                 </div>
             }
@@ -214,4 +226,36 @@ function NavBox({ value, status }) {
             {value}
         </button>
     );
+}
+
+function Box({ value, page, Icon, onSmash }) {
+    const { theme } = useTheme();
+    const navigate = useNavigate();
+    return (
+        <div 
+            onClick={() => {
+                if(page === 'profile') navigate('/profile');
+                onSmash(page)
+            }} 
+            className={`
+                py-2 
+                px-4 
+                w-full 
+                shadow-sm 
+                flex 
+                items-center 
+                gap-2 
+                rounded-sm
+                ${theme === 'light'
+                    ? 'bg-white hover:bg-gray-50'
+                    : 'bg-zinc-800 hover:bg-zinc-950'
+                }
+            `}
+        >
+            <Icon />
+            <span>
+                {value}
+            </span>
+        </div>
+    )
 }

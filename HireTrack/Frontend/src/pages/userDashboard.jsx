@@ -10,11 +10,13 @@ import { TailSpin } from "react-loader-spinner";
 
 import FileUploadBox from "@/components-project/fileuploadbox";
 import { DashBoardHistoryFunc, HistoryTable } from "@/components-project/tables";
+import { useNavigate } from "react-router";
  
 
 export default function UserDashBoard() {
     //states - status, loading, theme, other..
     const user = JSON.parse(localStorage.getItem('user'));
+    const navigate = useNavigate();
 
     const [data, setData] = useState(null);
     const [historyData, setHistoryData] = useState(null);
@@ -244,8 +246,9 @@ export default function UserDashBoard() {
                             </div>
 
                             <div className="flex items-center gap-5 text-sm text-gray-500">
-                                <a href="#" className="hover:text-sky-500 transition">
-                                    About
+                                <a  onClick={() => navigate('/about')}
+                                    className="hover:text-sky-500 transition">
+                                    About Me
                                 </a>
 
                                 <a 

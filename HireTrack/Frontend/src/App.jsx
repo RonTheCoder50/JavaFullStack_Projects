@@ -9,6 +9,7 @@ import AnalysisOutputPage from "./pages/output";
 import ProfilePage from "./pages/profile";
 import ProtectedRoute from "./components-project/protectedRoute";
 import ManagerComponenet from "./pages/manage";
+import AboutSection from "./pages/about";
 
 function App() {
   return (
@@ -52,6 +53,15 @@ function App() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/about"
+        element={
+          <ProtectedRoute>
+            <AboutSection />
           </ProtectedRoute>
         }
       />
