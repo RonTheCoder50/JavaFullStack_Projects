@@ -73,6 +73,7 @@ public class CustomSecurityConfig {
 
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173"
+
         ));
 
         config.setAllowedMethods(List.of("*"));

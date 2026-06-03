@@ -77,7 +77,7 @@ export default function SignupPage() {
                     type={'text'}
                     value={info.username}
                     onChange={handleInput}
-                    placeholder={'jack123'}
+                    placeholder={'john#123'}
                 />
 
                 <InputComponent 

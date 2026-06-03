@@ -58,8 +58,14 @@ public class UserService {
     //sign-up
     public ResponseLoginDto signup(SignupReqDto dto) {
         Users user = userRepo.findByUsername(dto.getUsername());
+        Users user2 = userRepo.findByEmail(dto.getEmail());
+
         if(user != null) {
             throw new DuplicateFoundException("Username is already taken, try alternative!");
+        }
+
+        if(user2 != null) {
+            throw new DuplicateFoundException("This Email is already signed in, try alternative!");
         }
 
         user = new Users();
