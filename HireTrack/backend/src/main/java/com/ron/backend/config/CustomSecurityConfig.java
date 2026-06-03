@@ -72,8 +72,8 @@ public class CustomSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173"
-
+                "http://localhost:5173",
+                "https://hiretrack-hazel.vercel.app/"
         ));
 
         config.setAllowedMethods(List.of("*"));
