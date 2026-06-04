@@ -1,39 +1,71 @@
-# THE HireTrack 
+# 🚀 HireTrack
 
-An AI-powered Applicant Tracking System (ATS) designed to help recruiters manage candidates, analyze resumes, and streamline hiring workflows
-& also helpful for students as well.
+### HireTrack is a full-stack resume analysis platform that helps candidates understand how job-ready their resume is by providing AI-powered feedback, ATS scoring, and skill gap insights. It also includes an admin dashboard for monitoring users and system analytics.
 
-### ✨ Key Features
+## ✨ What This Project Does
+- Upload your resume and get instant AI-generated feedback
+- ATS-style evaluation of resume quality
+- Identify missing skills and weak areas
+- Get suggestions to improve job readiness
+- Track past resume analyses in your history
+- Monitor improvement over time (average ATS score)
 
-### Authentication
-- Secure user registration and login
+## 👤 User Features
+- 📄 Resume Analysis
+- Upload resume (PDF/Text)
+- AI-powered breakdown of resume content
+- ATS score estimation
+- Skill extraction from resume
+- Personalized improvement suggestions
+
+## 📊 User Dashboard
+- View profile and usage details
+- Daily limit tracking (free tier system)
+- Average ATS score from last 5 analyses
+- History of all resume evaluations
+- Option to delete past records
+
+## 🛠️ Admin Features
+- 📈 System Monitoring
+- View total registered users
+- Monitor user activity and analysis usage
+- Track system-wide resume analysis data
+
+## 👥 User Management
+- Block or remove users
+- View user details in structured tables
+
+## 📊 Analytics Dashboard
+- User growth charts (weekly / monthly / yearly)
+- Resume analysis trends over time
+- Free vs Pro user distribution (pie chart)
+
+## 🔍 Data Control Panel
+- Search, sort, and paginate users
+- Analysis logs with filtering support
+- 🔐 Authentication & Security
 - JWT-based authentication
+- Role-based access control (User / Admin)
+- Secure API endpoints
 
-### Candidate Management
-- Add, edit, and delete candidate profiles
-- Store candidate information and resumes
-- Search candidates by name, skills, or role
+## 🎨 UI / UX
+- Clean and responsive dashboard design
+- Dark mode support
+- Interactive charts and analytics views
+Mobile-friendly layout
 
-### AI Resume Analysis
-- Upload resumes for AI processing
-- Generate candidate summaries using Gemini API
-- Extract key skills and relevant information from resumes
-- Quickly understand candidate profiles without manual review
+## 🧠 Tech Highlights
+- Full-stack architecture (Frontend + Backend)
+- REST API integration
+- AI-based resume processing (Gemini API)
+- Role-based system design
+- Real-world dashboard + analytics system
 
-### Email Integration (comming soon)
-- Send candidate-related communications
-- Contact candidates directly from the platform
+## 📌 Project Goal
+The goal of HireTrack is to help candidates:
+Understand why they are getting rejected and how to improve their resume in a structured, data-driven way.
 
-### Dashboard
-- View all candidates in a centralized dashboard
-- Track candidate information efficiently
-
-### Responsive UI
-- Mobile-friendly interface
-- Clean and intuitive user experience
-
-
-🛠 Tech Stack
+## 🛠 Tech Stack
 
 ### Frontend
 - React.js
@@ -47,7 +79,8 @@ An AI-powered Applicant Tracking System (ATS) designed to help recruiters manage
 - JWT
 
 ### Database
-- MySQL
+- MySQL 
+- PostgresSQL (For Deploy)
 
 ### AI Integration
 - Google Gemini API
@@ -57,21 +90,11 @@ An AI-powered Applicant Tracking System (ATS) designed to help recruiters manage
 - Render 
 - Neon
 
-## 🎯 Problem Solved
-
-Recruiters often spend significant time manually reviewing resumes and managing candidate data. HireTrack AI reduces manual effort by leveraging AI-powered resume analysis and centralized applicant management.
-
-Another one is for freshman graduates or students which they can quickly see ATS score and receive instantlly feedback on the basis of their resume.
-
 ## 🚀 Live Demo 
 
-Frontend: [Live URL] (comming soon) 
+Frontend: [[Live URL](https://hiretrack-hazel.vercel.app/)] 
 
-Backend: [API URL] (comming soon)
-
-## 📸 Screenshots
-
----
+Backend: [[API URL](https://hiretrack-dnyi.onrender.com)] 
 
 
 ## ⚙️ Installation
@@ -81,20 +104,36 @@ Backend: [API URL] (comming soon)
 git clone https://github.com/RonTheCoder50/hiretrack.git
 cd hiretrack
 
-### step 2: Backend setup
-- cd backend
--- application properties --
-  spring.datasource.url=YOUR_DB_URL
-  spring.datasource.username=YOUR_USERNAME
-  spring.datasource.password=YOUR_PASSWORD
-  JWT_SECRET=YOUR_SECRET
+### Step 2: Backend Setup
 
-- mvn spring-boot:run
+```bash
+cd backend
+```
 
-### step 3: Frontend setup
-cd Frontend
+**Configure `application.properties`:**
+
+```properties
+spring.datasource.url={DB_URL}
+spring.datasource.username={DB_USERNAME}
+spring.datasource.password={DB_PASSWORD}
+
+JWT_SECRET={JWT_SECRET_KEY}
+GOOGLE_API_KEY={GEMINI_API_KEY}
+```
+
+**Run the backend:**
+
+```bash
+mvn spring-boot:run
+```
+
+### Step 3: Frontend Setup
+
+```bash
+cd frontend
 npm install
 npm run dev
+```
 
 ## API ENDPOINTS
 -- Authentication:
@@ -116,42 +155,33 @@ npm run dev
   - GET: /view
   - GET: /users
 
-## 🏗️ Backend Architecture
-
-The backend follows a layered architecture:
-
-- Controller Layer → Handles HTTP requests
-- Service Layer → Contains business logic
-- Repository Layer → Database operations
-- DTO Layer → Request/Response data transfer
-- Security Layer → JWT Authentication & Authorization
-- Exception Layer → Centralized error handling
-- Entity Layer → Database models
-
-
 ## 📁 Project Structure
 
+```text
 HireTrack-AI
 │
 ├── frontend
 │   ├── components
 │   ├── pages
+│   ├── context
 │   ├── services
 │   └── assets
 │
 ├── backend
-│   ├── controller
-│   ├── service
-│   ├── repository
-│   ├── entity
-│   ├── dto
-│   ├── model
-│   ├── exception
-│   └── config
+│   └── src/main/java/com/ron/backend
+│       ├── controller
+│       ├── service
+│       ├── repository
+│       ├── entity
+│       ├── dto
+│       ├── exception
+│       ├── config
+│       └── security
 │
 └── README.md
+```
 
-
+ 
 ## Future Improvements
 - Advanced analytics
 - Job matching % via resume.
@@ -159,7 +189,7 @@ HireTrack-AI
 
 # Author
 
-Rohan Vaybhase
+### Rohan Vaybhase
 
 LinkedIn: [your-linkedin](https://www.linkedin.com/in/rohan-vaybhase-15661533a/)
 GitHub: https://github.com/RonTheCoder50
