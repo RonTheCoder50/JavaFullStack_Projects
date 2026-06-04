@@ -256,7 +256,7 @@ export default function UserDashBoard() {
                                     Privacy
                                 </a>
 
-                                <a href="#" className="hover:text-sky-500 transition">
+                                <a href="https://github.com/RonTheCoder50" className="hover:text-sky-500 transition">
                                     GitHub
                                 </a>
                             </div>
