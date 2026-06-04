@@ -1,4 +1,3 @@
-import AnalyzeResumePage from "./pages/analyzer"
 import {Routes, Route} from "react-router-dom";
 
 import SignupPage from "./pages/signup";
@@ -26,15 +25,6 @@ function App() {
         element={
           <ProtectedRoute>
             <ManagerComponenet />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/analyzeService"
-        element={
-          <ProtectedRoute>
-            <AnalyzeResumePage />
           </ProtectedRoute>
         }
       />
