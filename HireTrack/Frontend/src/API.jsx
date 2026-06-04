@@ -89,7 +89,7 @@ export async function viewRecentAnalysisAPI(filename) {
                 },
             },
         );
-        console.log(response);
+
         return response.data;
     } catch(err) {
         console.log(err.response?.data);
@@ -139,7 +139,6 @@ export async function getHistoryAnalysisAPI(
             }
         );
         
-        console.log('user-history analysis list:', response);
         return response?.data;
     } catch(err) {
         console.log(err.response?.data);

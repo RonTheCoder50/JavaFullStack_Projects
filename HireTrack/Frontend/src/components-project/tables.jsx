@@ -25,7 +25,6 @@ export function HistoryTable({
   async function handleViewFile(filename) {
     //access click file data from analysis
     const analysis = await viewRecentAnalysisAPI(filename);
-    console.log(analysis);
 
     if(analysis) {
       navigate(
@@ -355,7 +354,6 @@ export function DashBoardHistoryFunc({ data, refresh }) {
   async function handleViewFile(filename) {
     //access click file data from analysis
     const analysis = await viewRecentAnalysisAPI(filename);
-    console.log(analysis);
 
     if(analysis) {
       navigate(

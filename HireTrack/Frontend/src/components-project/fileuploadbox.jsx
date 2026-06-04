@@ -22,8 +22,6 @@ export default function FileUploadBox({ setLoading }) {
     if (file) {
       setFileName(file.name);
       setSelectedFile(file);
-      console.log("file: ", file);
-
       analyzeApiCall(file);
     }
   };

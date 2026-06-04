@@ -19,7 +19,6 @@ export default function AnalysisOutputPage() {
   const data = location.state?.response;
   const filename = location.state?.filename;
 
-
   let newDate = new Date();
 
   const time = `${newDate.getHours()} : ${newDate.getMinutes()}`

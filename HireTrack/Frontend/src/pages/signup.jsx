@@ -43,7 +43,7 @@ export default function SignupPage() {
         //signup + first login -> fetch to main page.
         const response = await signupAPI(info);
         if(response) {
-            console.log("server response: ", response);
+            console.log("Login Success!");
 
             localStorage.setItem("token", response?.bearerToken);
             localStorage.setItem("user", JSON.stringify(response));

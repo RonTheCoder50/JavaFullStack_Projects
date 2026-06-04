@@ -45,11 +45,8 @@ export default function UserDashBoard() {
     async function fetchUserData() {
         try {
             setLoading(true);
-
             const resp = await getUserDataAPI();
             setData(resp);
-
-            console.log('user data:', resp);
         } catch(err) {
             console.log(err);
         } finally {

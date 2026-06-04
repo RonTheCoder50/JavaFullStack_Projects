@@ -43,14 +43,10 @@ export default function LoginPage() {
         
         const response = await loginAPI(info);
         if(response?.data) {
+            console.log("Login Success!");
 
             localStorage.setItem("token", response.data.bearerToken);  
             localStorage.setItem("user", JSON.stringify(response.data));
-
-            console.log("server response: ", response === undefined 
-                ? 'no response | request failed' 
-                : response?.data
-            );
 
             navigate('/main');
             setLoading(false);

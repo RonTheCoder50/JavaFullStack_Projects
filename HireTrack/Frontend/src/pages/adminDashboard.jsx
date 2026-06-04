@@ -52,7 +52,6 @@ export default function AdminDashBoard() {
             const response = await fetchAdminDataAPI();
             if(response) {
                 setData(response);
-                console.log('admin data: ', response);
             } else {
                 alert('failed to fetch user count!');
             }
@@ -77,7 +76,6 @@ export default function AdminDashBoard() {
                 );
             if(response) {
                 setAnalysesListData(response);
-                console.log(response);
             }
         }
 
