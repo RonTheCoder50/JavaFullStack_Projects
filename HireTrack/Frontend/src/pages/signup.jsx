@@ -42,7 +42,7 @@ export default function SignupPage() {
         if(response) {
             console.log("server response: ", response);
 
-            localStorage.setItem("token", response.bearerToken);
+            localStorage.setItem("token", response?.bearerToken);
             localStorage.setItem("user", JSON.stringify(response));
 
             navigate('/main');   
