@@ -104,22 +104,36 @@ Backend: [[API URL](https://hiretrack-dnyi.onrender.com)]
 git clone https://github.com/RonTheCoder50/hiretrack.git
 cd hiretrack
 
-### step 2: Backend setup
-- cd backend
-  
--- application properties --
-  spring.datasource.url=YOUR_DB_URL
-  spring.datasource.username=YOUR_USERNAME
-  spring.datasource.password=YOUR_PASSWORD
-  JWT_SECRET=YOUR_SECRET
-  GOOGLE_API_KEY=YOUR_GEMINI_KEY
+### Step 2: Backend Setup
 
-- mvn spring-boot:run
+```bash
+cd backend
+```
 
-### step 3: Frontend setup
-cd Frontend
+**Configure `application.properties`:**
+
+```properties
+spring.datasource.url=YOUR_DB_URL
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
+
+JWT_SECRET=YOUR_SECRET
+GOOGLE_API_KEY=YOUR_GEMINI_KEY
+```
+
+**Run the backend:**
+
+```bash
+mvn spring-boot:run
+```
+
+### Step 3: Frontend Setup
+
+```bash
+cd frontend
 npm install
 npm run dev
+```
 
 ## API ENDPOINTS
 -- Authentication:
@@ -143,27 +157,31 @@ npm run dev
 
 ## 📁 Project Structure
 
+```text
 HireTrack-AI
 │
 ├── frontend
-│   ├── components-project
-│   ├── components/ui
-│   ├── lib
-│   └── pages
+│   ├── components
+│   ├── pages
+│   ├── context
+│   ├── services
+│   └── assets
 │
 ├── backend
-│   ├── controller
-│   ├── service
-│   ├── repository
-│   ├── entity
-│   ├── dto
-│   ├── model
-│   ├── exception
-│   └── config
+│   └── src/main/java/com/ron/backend
+│       ├── controller
+│       ├── service
+│       ├── repository
+│       ├── entity
+│       ├── dto
+│       ├── exception
+│       ├── config
+│       └── security
 │
 └── README.md
+```
 
-
+ 
 ## Future Improvements
 - Advanced analytics
 - Job matching % via resume.
