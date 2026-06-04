@@ -17,10 +17,6 @@ import java.util.Map;
 @Component
 public class JWTService {
 
-//    @Value("${JWT_SECRET_KEY}")
-//    private String SECRET;
-//    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
-
     @Value("${JWT_SECRET_KEY}")
     private String secret;
 
