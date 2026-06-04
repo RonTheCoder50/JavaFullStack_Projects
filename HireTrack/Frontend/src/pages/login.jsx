@@ -12,6 +12,8 @@ import { useTheme } from "./theme"
 export default function LoginPage() {
     const { theme } = useTheme();
     const [info, setInfo] = useState({username: '', password: ''});
+
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     function handleUsername(e) {
@@ -30,6 +32,8 @@ export default function LoginPage() {
     
     async function handleSubmit(e) {
         e.preventDefault();
+        setLoading(true);
+
         if(info.username.trim().length === 0 || 
             info.password.trim().length === 0
         ) {
@@ -38,7 +42,6 @@ export default function LoginPage() {
         } 
         
         const response = await loginAPI(info);
-        
         if(response?.data) {
 
             localStorage.setItem("token", response.data.bearerToken);  
@@ -48,7 +51,9 @@ export default function LoginPage() {
                 ? 'no response | request failed' 
                 : response?.data
             );
+
             navigate('/main');
+            setLoading(false);
         }
     }
 
@@ -93,8 +98,14 @@ export default function LoginPage() {
                     />
                 </div>
 
-                <Button className="w-full" onClick={(e) => handleSubmit(e)}>
-                    Login
+                <Button
+                    disabled={loading}
+                    className="w-full"
+                    onClick={(e) => handleSubmit(e)}
+                >
+                    {
+                        loading ? 'Wait...' : 'Login' 
+                    }
                 </Button>
             </form>
             </CardContent>

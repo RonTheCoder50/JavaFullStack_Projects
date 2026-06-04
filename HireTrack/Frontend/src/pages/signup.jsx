@@ -25,6 +25,7 @@ export default function SignupPage() {
         email: ''
     });
 
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     function handleInput(e) {
@@ -36,7 +37,9 @@ export default function SignupPage() {
     }
 
     async function handleSubmit(e) {
+        setLoading(true);
         e.preventDefault();
+
         //signup + first login -> fetch to main page.
         const response = await signupAPI(info);
         if(response) {
@@ -46,6 +49,7 @@ export default function SignupPage() {
             localStorage.setItem("user", JSON.stringify(response));
 
             navigate('/main');   
+            setLoading(false);
         } 
     }
 
@@ -94,10 +98,11 @@ export default function SignupPage() {
                 />
 
                 <Button 
-                    className="w-full"
+                    disabled={loading}
+                    className={`w-full`}
                     onClick={(e) => handleSubmit(e)}
                 >
-                    Sign Up
+                    {loading ? 'Wait...' : 'Sign Up'}
                 </Button>
                 
                 <div className="flex justify-center gap-6 items-center text-sm">
