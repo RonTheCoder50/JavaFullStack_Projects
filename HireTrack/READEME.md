@@ -113,12 +113,12 @@ cd backend
 **Configure `application.properties`:**
 
 ```properties
-spring.datasource.url=YOUR_DB_URL
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+spring.datasource.url={DB_URL}
+spring.datasource.username={DB_USERNAME}
+spring.datasource.password={DB_PASSWORD}
 
-JWT_SECRET=YOUR_SECRET
-GOOGLE_API_KEY=YOUR_GEMINI_KEY
+JWT_SECRET={JWT_SECRET_KEY}
+GOOGLE_API_KEY={GEMINI_API_KEY}
 ```
 
 **Run the backend:**
