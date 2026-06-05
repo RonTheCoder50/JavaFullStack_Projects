@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -15,10 +16,10 @@ export async function signupAPI(info) {
     } catch(e) {
         const errors = e.response?.data?.message;
         if(typeof errors === 'string') {
-            alert(errors);
+            toast.error(errors);
         } else {
             const allErrors = Object.values(errors).join("\n");
-            alert(allErrors);
+            toast.error(allErrors);
         }
     }
 }
@@ -34,9 +35,9 @@ export async function loginAPI(info) {
         return response;
     } catch(e) {
         if(e.response?.status === 403) {
-            alert('Invalid username or password!');
+            toast.error('Invalid username or password!');
         } else {
-            alert('Something went wrong!');
+            toast.error('Something went wrong!');
         }
     }
 }

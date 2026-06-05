@@ -49,8 +49,9 @@ export default function SignupPage() {
             localStorage.setItem("user", JSON.stringify(response));
 
             navigate('/main');   
-            setLoading(false);
         } 
+        
+        setLoading(false);
     }
 
     return (

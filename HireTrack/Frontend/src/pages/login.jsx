@@ -49,8 +49,9 @@ export default function LoginPage() {
             localStorage.setItem("user", JSON.stringify(response.data));
 
             navigate('/main');
-            setLoading(false);
         }
+
+        setLoading(false);
     }
 
     return (
