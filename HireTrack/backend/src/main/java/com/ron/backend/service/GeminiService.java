@@ -2,6 +2,8 @@ package com.ron.backend.service;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
+import com.ron.backend.exception.AiQuotaExceededException;
+import com.ron.backend.exception.AiServiceBusyException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,8 +39,16 @@ public class GeminiService {
                     );
 
             return response.text();
-        } catch(Exception e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            String message = e.getMessage();
+
+            if (message != null && message.contains("503")) {
+                throw new AiServiceBusyException(
+                        "AI service is experiencing high traffic."
+                );
+            }
+
+            throw new RuntimeException("Unexpected AI service error", e);
         }
     }
 }

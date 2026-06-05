@@ -1,4 +1,6 @@
 import {Routes, Route} from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import SignupPage from "./pages/signup";
 import LoginPage from "./pages/login";
@@ -12,6 +14,9 @@ import AboutSection from "./pages/about";
 
 function App() {
   return (
+    <> 
+    <ToastContainer />
+    
     <Routes>
 
       {/* Public Routes */}
@@ -57,6 +62,7 @@ function App() {
       />
 
     </Routes>
+    </>
   );
 }
  

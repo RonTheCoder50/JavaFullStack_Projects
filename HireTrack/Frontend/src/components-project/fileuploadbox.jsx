@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Upload, ImageIcon } from "lucide-react";
 import { analyzedResumeAPI } from "@/API";
 import { useTheme } from "@/pages/theme";
+import { toast } from "react-toastify";
 
 export default function FileUploadBox({ setLoading }) {
   const inputRef = useRef(null);
@@ -43,7 +44,16 @@ export default function FileUploadBox({ setLoading }) {
         });
       }
     } catch (err) {
-      alert('daily ' + err.response?.data?.message || 'limit exceed!');
+      const status = err.response?.status;
+      console.log(status);
+
+      if (status === 429) {
+          toast.error("AI usage limit reached. Please try later.");
+      } else if (status === 503) {
+          toast.error("AI service is busy due to high traffic.");
+      } else {
+          toast.error("Something went wrong.");
+      }
     } finally {
       setLoading(false); // loading OFF (always runs)
       setSelectedFile(null);

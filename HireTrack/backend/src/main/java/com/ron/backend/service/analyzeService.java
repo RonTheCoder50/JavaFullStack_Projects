@@ -5,7 +5,7 @@ import com.ron.backend.entity.Analysis;
 import com.ron.backend.entity.UserData;
 import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
-import com.ron.backend.exception.LimitExceedException;
+import com.ron.backend.exception.AiQuotaExceededException;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.repository.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -135,7 +135,7 @@ public class analyzeService {
         Long userId = user.getId();
 
         if(checkValidity()) { //for checking today's limits
-            throw new LimitExceedException("limit exceeded!");
+            throw new AiQuotaExceededException("Daily limit exceeded!");
         }
 
         Analysis analysis = analysisRepo.findByFilenameAndUserId(filename, userId);

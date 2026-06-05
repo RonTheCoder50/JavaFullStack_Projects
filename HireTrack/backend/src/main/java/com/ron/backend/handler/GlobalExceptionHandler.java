@@ -1,9 +1,6 @@
 package com.ron.backend.handler;
 
-import com.ron.backend.exception.DuplicateFoundException;
-import com.ron.backend.exception.LimitExceedException;
-import com.ron.backend.exception.UnSupportedMediaException;
-import com.ron.backend.exception.UserNotFoundException;
+import com.ron.backend.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,18 +36,6 @@ public class GlobalExceptionHandler {
                 .body(map);
     }
 
-    @ExceptionHandler(LimitExceedException.class)
-    public ResponseEntity<?> handleLimitExceedException(LimitExceedException ex) {
-        Map<String,Object> map = new HashMap<>();
-        map.put("status", 500);
-        map.put("success", false);
-        map.put("message", ex.getMessage());
-
-        return ResponseEntity
-                .status(500)
-                .body(map);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -76,5 +61,19 @@ public class GlobalExceptionHandler {
         res.put("message", ex.getMessage());
 
         return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AiQuotaExceededException.class)
+    public ResponseEntity<String> handleQuota(AiQuotaExceededException ex) {
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS) // 429
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AiServiceBusyException.class)
+    public ResponseEntity<String> handleBusy(AiServiceBusyException ex) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE) // 503
+                .body(ex.getMessage());
     }
 }
