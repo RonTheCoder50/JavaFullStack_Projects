@@ -5,9 +5,25 @@ import { useTheme } from "./theme";
 import { MdOutlineWbSunny } from 'react-icons/md';
 import { FiMoon } from "react-icons/fi";
 
+import { useEffect, useState } from "react";
+import { serverAPI } from "@/API";
+
 export default function IntroPage() {
   const { theme, toggleTheme } = useTheme();
+  const [serverReady, setServerReady] = useState(false);
 
+  useEffect(() => {
+    async function wakeServer() {
+      const resp = await serverAPI();
+      if(resp && resp.trim().toLowerCase() === 'success') {
+        setServerReady(true);
+      }
+    }
+
+    wakeServer();
+  }, []);
+
+  
   return (
     <section 
       className={`
@@ -48,8 +64,12 @@ export default function IntroPage() {
             }
           </Button>
           
-          <Link to="/login">
+          <Link 
+            className={`${!serverReady ? 'pointer-events-none' : ''}`} 
+            to="/login"
+          >
             <Button
+              isDisabled={!serverReady}
               variant="outline"
               className="text-sm font-medium"
             >
@@ -57,8 +77,14 @@ export default function IntroPage() {
             </Button>
           </Link>
 
-          <Link to="/signup">
-            <Button className="rounded-xl px-5">
+          <Link
+            className={`${!serverReady ? 'pointer-events-none' : ''}`} 
+            to="/signup"
+          >
+            <Button
+              isDisabled={!serverReady}
+              className="rounded-xl px-5"
+            >
               Get Started
             </Button>
           </Link>
@@ -88,6 +114,16 @@ export default function IntroPage() {
          >
             AI Powered Resume Analyzer
         </div>
+
+          
+          {!serverReady && (
+            <div className="w-full flex justify-center py-3">
+              <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg text-sm">
+                <div className="w-4 h-4 border-2 border-yellow-800 border-t-transparent rounded-full animate-spin" />
+                Backend server is waking up (free hosting). First request may take 1-2 minutes.
+              </div>
+            </div>
+          )}
 
           <h2 
             className={`
@@ -134,14 +170,24 @@ export default function IntroPage() {
           </div>
 
           <div className="flex items-center justify-center gap-4 pt-4">
-            <Link to="/signup">
-              <Button className="px-8 py-6 text-base rounded-2xl shadow-lg">
+            <Link
+              className={`${!serverReady ? 'pointer-events-none' : ''}`}  
+              to="/signup"
+            >
+              <Button
+                isDisabled={!serverReady} 
+                className="px-8 py-6 text-base rounded-2xl shadow-lg"
+              >
                 Start Free
               </Button>
             </Link>
 
-            <Link to="/login">
+            <Link 
+              className={`${!serverReady ? 'pointer-events-none' : ''}`} 
+              to="/login"
+            >
               <Button
+                isDisabled={!serverReady}
                 variant="outline"
                 className={`
                   px-8 

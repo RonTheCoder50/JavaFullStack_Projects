@@ -3,6 +3,17 @@ import { toast } from "react-toastify";
 
 const API = import.meta.env.VITE_API_URL;
 
+export async function serverAPI() {
+    try {
+        const response = await axios.get(`${API}/user/test`);
+        
+        toast.info("Server is awake and ready.");
+        return response.data;
+    } catch(err) {
+        toast.response(err.response?.data);
+    }
+}
+
 export async function signupAPI(info) {
     try {
         const newInfo = {

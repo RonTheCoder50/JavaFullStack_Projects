@@ -20,6 +20,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    //Test - to start server as soon early
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.status(201).body("success");
+    }
+
     //login
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody RequestLoginDto dto) {
