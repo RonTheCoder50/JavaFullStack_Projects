@@ -40,7 +40,8 @@ export default function IntroPage() {
       <header className="w-full flex items-center justify-between px-8 py-5 border-b backdrop-blur-sm">
         <h1 
           className={`
-            text-2xl 
+            text-lg
+            sm:text-2xl 
             font-bold 
             tracking-tight 
             ${theme === 'light'
@@ -71,7 +72,7 @@ export default function IntroPage() {
             <Button
               isDisabled={!serverReady}
               variant="outline"
-              className="text-sm font-medium"
+              className="hidden sm:inline-block text-sm font-medium"
             >
               Login
             </Button>
@@ -83,7 +84,7 @@ export default function IntroPage() {
           >
             <Button
               isDisabled={!serverReady}
-              className="rounded-xl px-5"
+              className="hidden sm:inline-block rounded-xl px-3 sm:px-5"
             >
               Get Started
             </Button>
@@ -103,6 +104,7 @@ export default function IntroPage() {
               border-blue-500/50
               px-4
               py-1
+              mt-8
               text-sm
               shadow-sm
               animate-pulse
@@ -118,8 +120,8 @@ export default function IntroPage() {
           
           {!serverReady && (
             <div className="w-full flex justify-center py-3">
-              <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg text-sm">
-                <div className="w-4 h-4 border-2 border-yellow-800 border-t-transparent rounded-full animate-spin" />
+              <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg text-sm animate-pulse">
+                <div className="hidden sm:block w-4 h-4 border-2 border-yellow-800 border-t-transparent rounded-full animate-spin" />
                 Backend server is waking up (free hosting). First request may take 1-2 minutes.
               </div>
             </div>
