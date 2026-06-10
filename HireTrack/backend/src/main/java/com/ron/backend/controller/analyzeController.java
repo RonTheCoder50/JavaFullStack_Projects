@@ -15,9 +15,20 @@ public class analyzeController {
     @Autowired
     private analyzeService service;
 
+    //for resume analysis
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws UnSupportedMediaException, IOException {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file)
+            throws UnSupportedMediaException, IOException {
         return ResponseEntity.status(200).body(service.analyzeFile(file));
+    }
+
+    //for job matching analysis
+    @PostMapping("/job-matching")
+    public ResponseEntity<?> getJobMatchingFeedback(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam String description
+    ) throws IOException, UnSupportedMediaException {
+        return ResponseEntity.status(200).body(service.getJobMatchingResponse(file, description));
     }
 
     @GetMapping("/view/{filename}")

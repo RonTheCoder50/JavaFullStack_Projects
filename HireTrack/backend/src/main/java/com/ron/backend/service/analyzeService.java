@@ -1,10 +1,7 @@
 package com.ron.backend.service;
 
 import com.ron.backend.dto.AnalysisResponseDto;
-import com.ron.backend.entity.Analysis;
-import com.ron.backend.entity.UserData;
-import com.ron.backend.entity.UserHistory;
-import com.ron.backend.entity.Users;
+import com.ron.backend.entity.*;
 import com.ron.backend.exception.AiQuotaExceededException;
 import com.ron.backend.exception.UnSupportedMediaException;
 import com.ron.backend.repository.*;
@@ -41,6 +38,9 @@ public class analyzeService {
 
     @Autowired
     private AnalysisRepository analysisRepo;
+
+    @Autowired
+    private JobMatchRepository matchRepo;
 
     public String analyzeFile(MultipartFile file) throws UnSupportedMediaException, IOException {
             String dbResponse = getAnalysis(file.getOriginalFilename());
@@ -254,4 +254,32 @@ public class analyzeService {
 
         return "failed to removed analysis!";
     }
+
+    // Job Matching feature methods
+    public String getJobMatchingResponse(
+            MultipartFile file,
+            String description
+    ) throws IOException, UnSupportedMediaException {
+        if(checkValidity()) { //for checking today's limits.
+            throw new AiQuotaExceededException("Daily limit exceeded!");
+        }
+
+        String resumeText = extractTextFromFile(file);
+        String response = geminiService.analyzeJobMatching(resumeText, description);
+        savedJobMatchResponse(response, file.getOriginalFilename());
+        return response;
+    }
+
+    //saved to db
+    public void savedJobMatchResponse(String response, String filename) {
+        JobMatchAnalysis data = new JobMatchAnalysis();
+        Users user = userRepo.findByUsername(getCurrentUser());
+        data.setUser(user);
+        data.setFilename(filename);
+        data.setContent(response);
+        data.setDateTime(LocalDateTime.now());
+
+        matchRepo.save(data);
+    }
+
 }
