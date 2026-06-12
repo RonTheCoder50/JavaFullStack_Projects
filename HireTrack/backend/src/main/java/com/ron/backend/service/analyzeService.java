@@ -279,6 +279,11 @@ public class analyzeService {
         data.setContent(response);
         data.setDateTime(LocalDateTime.now());
 
+        UserData userdata = userDataRepo.findByUserId(user.getId());
+        if(userdata != null && userdata.getRemainingLimit() > 0) {
+            userdata.setRemainingLimit(userdata.getRemainingLimit() - 1);
+        }
+
         matchRepo.save(data);
     }
 

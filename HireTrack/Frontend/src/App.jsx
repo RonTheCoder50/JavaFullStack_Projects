@@ -1,17 +1,20 @@
-import {Routes, Route} from 'react-router-dom';
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import SignupPage from './pages/signup';
-import LoginPage from './pages/login';
-import IntroPage from './pages/Intro';
+import SignupPage from "./pages/signup";
+import LoginPage from "./pages/login";
+import IntroPage from "./pages/Intro";
 
-import AnalysisOutputPage from './pages/output';
-import ProfilePage from './pages/profile';
-import ProtectedRoute from './components-project/protectedRoute';
-import ManagerComponenet from './pages/manage';
-import AboutSection from './pages/about';
-import ResumeUploadPage from './components-project/resumeUploadPage';
+import AnalysisOutputPage from "./pages/output";
+import ProfilePage from "./pages/profile";
+import ProtectedRoute from "./components-project/protectedRoute";
+import ManagerComponenet from "./pages/manage";
+import AboutSection from "./pages/about";
+import ResumeUploadPage from "./components-project/resumeUploadPage";
+import JobMatcherPage from "./pages/jobMatcher";
+
+import JobMatchingOutput from "./pages/jobDescOutput";
 
 function App() {
   return (
@@ -51,6 +54,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/job-matcher"
+          element={
+            <ProtectedRoute>
+              <JobMatcherPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/job-matcher-output" element={<JobMatchingOutput />} />
 
         <Route
           path="/profile"

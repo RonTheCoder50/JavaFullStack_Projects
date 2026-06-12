@@ -1,21 +1,22 @@
-import {useRef, useState} from 'react';
-import {useNavigate} from 'react-router';
-import {Upload, ImageIcon} from 'lucide-react';
-import {analyzedResumeAPI} from '@/API';
-import {useTheme} from '@/pages/theme';
-import {toast} from 'react-toastify';
+import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import { Upload, ImageIcon } from "lucide-react";
+import { analyzedResumeAPI } from "@/API";
+import { useTheme } from "@/pages/theme";
+import { toast } from "react-toastify";
 
-import {TailSpin} from 'react-loader-spinner';
-import {Button} from '@base-ui/react/button';
+import { TailSpin } from "react-loader-spinner";
+import { Button } from "@base-ui/react/button";
+import ResumeInputComponent from "./resumeInput";
 
 export default function ResumeUploadPage() {
   const inputRef = useRef(null);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const navigate = useNavigate();
-  const {theme} = useTheme();
+  const { theme } = useTheme();
 
   const handleClick = () => {
     inputRef.current.click();
@@ -32,7 +33,7 @@ export default function ResumeUploadPage() {
 
   async function analyzeApiCall(file) {
     if (selectedFile === null) {
-      toast.warn('select resume file first!');
+      toast.warn("select resume file first!");
       return;
     }
 
@@ -41,7 +42,7 @@ export default function ResumeUploadPage() {
       const response = await analyzedResumeAPI(file);
 
       if (response) {
-        navigate('/analysis-output', {
+        navigate("/analysis-output", {
           state: {
             response,
             filename: file?.name,
@@ -54,16 +55,16 @@ export default function ResumeUploadPage() {
       console.log(status);
 
       if (status === 429) {
-        toast.error('AI usage limit reached. Please try later.');
+        toast.error("AI usage limit reached. Please try later.");
       } else if (status === 503) {
-        toast.error('AI service is busy due to high traffic.');
+        toast.error("AI service is busy due to high traffic.");
       } else {
-        toast.error('Something went wrong.');
+        toast.error("Something went wrong.");
       }
     } finally {
       setLoading(false); // loading OFF (always runs)
       setSelectedFile(null);
-      setFileName('');
+      setFileName("");
     }
   }
   return (
@@ -83,7 +84,7 @@ export default function ResumeUploadPage() {
         `}
       >
         <Button
-          onClick={() => navigate('/main')}
+          onClick={() => navigate("/main")}
           className={`
             border
             hover:border-red-800
@@ -135,74 +136,19 @@ export default function ResumeUploadPage() {
       </div>
 
       {/* Input */}
-      <div className="mt-10 flex justify-center">
-        <div
-          onClick={handleClick}
-          className={`
-          w-full max-w-md h-72
-          border-2
-          border-dashed 
-          rounded-3xl
-          hover:border-sky-300
-          ${
-            theme === 'light'
-              ? 'hover:bg-gray-50 border-gray-300'
-              : 'hover:bg-zinc-800 border-gray-500'
-          }
-          transition-all duration-300
-          cursor-pointer
-          flex flex-col items-center justify-center
-          gap-4 
-          shadow-sm
-        `}
-        >
-          <div className="p-5 rounded-full bg-gray-100">
-            <Upload className="w-10 h-10 text-gray-700" />
-          </div>
-
-          <div className="text-center px-4">
-            <h2
-              className={`
-              text-xl 
-              font-semibold 
-              ${theme === 'light' ? 'text-gray-800' : 'text-gray-300'}
-            `}
-            >
-              Upload File
-            </h2>
-
-            <p
-              className={`
-              text-sm
-              mt-1
-              ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}
-            `}
-            >
-              Click here to browse your files
-            </p>
-
-            {fileName && (
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600 font-medium">
-                <ImageIcon size={18} />
-                {fileName}
-              </div>
-            )}
-          </div>
-
-          <input
-            type="file"
-            ref={inputRef}
-            onChange={handleFileChange}
-            className="hidden"
-          />
-        </div>
-      </div>
+      <ResumeInputComponent
+        handleClick={handleClick}
+        handleFileChange={handleFileChange}
+        theme={theme}
+        fileName={fileName}
+        inputRef={inputRef}
+      />
 
       <div className="mt-1 flex flex-wrap justify-center items-center gap-10">
         <Button
           onClick={() => {
             setSelectedFile(null);
-            setFileName('');
+            setFileName("");
           }}
           className={`
           border

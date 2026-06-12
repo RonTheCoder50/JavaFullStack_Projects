@@ -11,6 +11,7 @@ public class UserDataResponseDto {
     private String plan;
     private Long limit;
     private Long totalAnalysis;
+    private Integer totalJobMatchAnalyses;
     private Double avgAtsScore;
 
     private List<HistoryResponseDto> analysisHistory;

@@ -26,7 +26,7 @@ public class analyzeController {
     @PostMapping("/job-matching")
     public ResponseEntity<?> getJobMatchingFeedback(
             @RequestParam("file") MultipartFile file,
-            @RequestParam String description
+            @RequestParam("description") String description
     ) throws IOException, UnSupportedMediaException {
         return ResponseEntity.status(200).body(service.getJobMatchingResponse(file, description));
     }

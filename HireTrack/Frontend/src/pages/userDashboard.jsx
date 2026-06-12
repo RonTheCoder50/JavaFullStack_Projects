@@ -1,43 +1,47 @@
-import {useCallback, useEffect, useState} from 'react';
-import {useTheme} from './theme';
+import { useCallback, useEffect, useState } from "react";
+import { useTheme } from "./theme";
 
-import {getUserDataAPI, getHistoryAnalysisAPI} from '@/API';
+import { getUserDataAPI, getHistoryAnalysisAPI } from "@/API";
 
-import UserNavbar from './userNavbar';
-import HeroCard from '@/components-project/herocard';
+import UserNavbar from "./userNavbar";
+import HeroCard from "@/components-project/herocard";
 
-import {DashBoardHistoryFunc, HistoryTable} from '@/components-project/tables';
-import {useNavigate} from 'react-router';
-import PricingPage from './pricing';
+import {
+  DashBoardHistoryFunc,
+  HistoryTable,
+} from "@/components-project/tables";
+import { useNavigate } from "react-router";
+import PricingPage from "./pricing";
 
-import {ChevronRight} from 'lucide-react';
+import { ChevronRight } from "lucide-react";
+import JobMatcherPage from "./jobMatcher";
 
 export default function UserDashBoard() {
   //states - status, loading, theme, other..
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [historyData, setHistoryData] = useState(null);
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
 
-  const [status, setStatus] = useState('dashboard');
+  const [status, setStatus] = useState("dashboard");
   const [loading, setLoading] = useState(false);
-  const {theme} = useTheme();
+  const { theme } = useTheme();
 
   const [customConfig, setCustomConfig] = useState({
-    sort: '',
+    sort: "",
     page: 0,
-    order: 'asc',
+    order: "asc",
   });
 
   //IS Current login Block Checking..
   useEffect(() => {
     if (data?.isBlock === null) {
-      localStorage.setItem('block', 'Active');
+      localStorage.setItem("block", "Active");
     } else {
       data?.isBlock
-        ? localStorage.setItem('block', 'Blocked')
-        : localStorage.setItem('block', 'Active');
+        ? localStorage.setItem("block", "Blocked")
+        : localStorage.setItem("block", "Active");
     }
   }, [data]);
 
@@ -60,7 +64,7 @@ export default function UserDashBoard() {
       customConfig.page,
       10,
       customConfig.sort,
-      customConfig.order
+      customConfig.order,
     );
 
     if (response) {
@@ -79,14 +83,14 @@ export default function UserDashBoard() {
   };
 
   function handleSort(val) {
-    setCustomConfig({...customConfig, sort: val});
+    setCustomConfig({ ...customConfig, sort: val });
   }
   function handleOrder(val) {
-    setCustomConfig({...customConfig, order: val});
+    setCustomConfig({ ...customConfig, order: val });
   }
 
   function handlePage(val) {
-    if (val.trim() === 'prev') {
+    if (val.trim() === "prev") {
       setCustomConfig({
         ...customConfig,
         page: historyData?.pageable?.pageNumber - 1,
@@ -105,12 +109,12 @@ export default function UserDashBoard() {
   }, []);
 
   useEffect(() => {
-    if (status === 'history') {
+    if (status === "history") {
       fetchHistoryData();
     }
   }, [fetchHistoryData, status]);
 
-  if (localStorage.getItem('block') === 'Blocked') {
+  if (localStorage.getItem("block") === "Blocked") {
     return (
       <p className="text-xl lg:text-2xl font-medium tracking-wide text-center mt-28">
         user is blocked!
@@ -139,16 +143,17 @@ export default function UserDashBoard() {
     >
       <UserNavbar status={status} handleStatus={handleStatus} />
 
-      {status === 'dashboard' && data ? (
+      {status === "dashboard" && data ? (
         <section
           className={`
                     min-h-screen
                     w-full 
                     flex 
                     flex-col 
-                    my-4 
+                    sm:my-4 
                     gap-16
-                    mt-36
+                    mt-0
+                    sm:mt-36
                 `}
         >
           <div className="flex flex-col gap-2 my-3 mx-auto">
@@ -164,36 +169,42 @@ export default function UserDashBoard() {
             </p>
           </div>
 
-          <div className="w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
+          <div className="w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
             <HeroCard
-              name={'Total Resumes Analyzed'}
+              name={"Total Resumes Analyzed"}
               value={data?.totalAnalysis || 0}
             />
 
             <HeroCard
-              name={'Average ATS Score'}
+              name={"Total JobMatch Analyzed"}
+              value={data?.totalJobMatchAnalyses || 0}
+            />
+
+            <HeroCard
+              name={"Average ATS Score"}
               value={Number(data?.avgAtsScore.toFixed(2)) || 0}
             />
 
             <HeroCard
-              name={'Analyzed Usage Left'}
-              value={data?.limit + '/5' || '5/5'}
+              name={"Analyzed Usage Left"}
+              value={data?.limit + "/5" || "5/5"}
             />
 
             <HeroCard
-              name={'Current Plan'}
-              value={data?.plan?.toLowerCase() + ' tier' || 'Free Tier'}
+              name={"Current Plan"}
+              value={data?.plan?.toLowerCase() + " tier" || "Free Tier"}
             />
           </div>
 
           <div className="w-full flex flex-col gap-8 items-center my-12">
             <DashboardBox
-              onSmash={'/analyze-resume'}
-              value={'Analyze Your Resume.'}
+              onSmash={"/analyze-resume"}
+              value={"Analyze Your Resume."}
               theme={theme}
             />
             <DashboardBox
-              value={'Analyze Job Matching via Resume.'}
+              onSmash={"/job-matcher"}
+              value={"Analyze Job Matching via Resume."}
               theme={theme}
             />
           </div>
@@ -215,9 +226,9 @@ export default function UserDashBoard() {
                             border-t 
                             py-6
                             ${
-                              theme === 'light'
-                                ? 'border-gray-200'
-                                : 'border-gray-600'
+                              theme === "light"
+                                ? "border-gray-200"
+                                : "border-gray-600"
                             }
                         `}
           >
@@ -228,9 +239,9 @@ export default function UserDashBoard() {
                                         text-sm 
                                         font-medium 
                                         ${
-                                          theme === 'light'
-                                            ? 'text-gray-700'
-                                            : 'text-gray-200'
+                                          theme === "light"
+                                            ? "text-gray-700"
+                                            : "text-gray-200"
                                         }
                                     `}
                 >
@@ -243,9 +254,9 @@ export default function UserDashBoard() {
 
                                         mt-1
                                         ${
-                                          theme === 'light'
-                                            ? 'text-gray-500'
-                                            : 'text-gray-400'
+                                          theme === "light"
+                                            ? "text-gray-500"
+                                            : "text-gray-400"
                                         }
                                     `}
                 >
@@ -255,14 +266,14 @@ export default function UserDashBoard() {
 
               <div className="flex items-center gap-5 text-sm text-gray-500">
                 <a
-                  onClick={() => navigate('/about')}
+                  onClick={() => navigate("/about")}
                   className="hover:text-sky-500 transition cursor-pointer"
                 >
                   About Me
                 </a>
 
                 <a
-                  onClick={() => alert('lol \n kidding you are safe :) ')}
+                  onClick={() => alert("lol \n kidding you are safe :) ")}
                   className="hover:text-sky-500 transition cursor-pointer"
                 >
                   Privacy
@@ -279,12 +290,12 @@ export default function UserDashBoard() {
           </footer>
         </section>
       ) : (
-        status === 'dashboard' && (
+        status === "dashboard" && (
           <p className="text-center text-2xl font-medium mt-14">Loading...</p>
         )
       )}
 
-      {status === 'history' && historyData ? (
+      {status === "history" && historyData ? (
         <HistoryTable
           data={historyData?.content}
           refresh={fetchHistoryData}
@@ -299,24 +310,24 @@ export default function UserDashBoard() {
           isLastPage={historyData?.last}
         />
       ) : (
-        status === 'history' && (
+        status === "history" && (
           <p className="text-center text-2xl font-medium mt-14">Loading...</p>
         )
       )}
 
-      {status === 'pricing' && <PricingPage />}
+      {status === "pricing" && <PricingPage />}
     </section>
   );
 }
 
-function DashboardBox({onSmash, value, theme}) {
+function DashboardBox({ onSmash, value, theme }) {
   const navigate = useNavigate();
   return (
     <div
       onClick={() => navigate(onSmash)}
       className={`
                 w-full 
-                max-w-[250px] 
+                max-w-[85%] 
                 sm:max-w-[550px] 
                 flex 
                 justify-between 
@@ -334,7 +345,7 @@ function DashboardBox({onSmash, value, theme}) {
                 ease-linear
                 cursor-pointer
                 group
-                ${theme === 'light' ? 'hover:bg-sky-300' : 'hover:bg-gray-800'} 
+                ${theme === "light" ? "hover:bg-sky-300" : "hover:bg-gray-800"} 
             `}
     >
       <span className="text-sm md:text-base font-normal tracking-wide">

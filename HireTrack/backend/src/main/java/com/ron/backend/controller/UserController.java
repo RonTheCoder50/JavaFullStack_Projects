@@ -5,6 +5,7 @@ import com.ron.backend.dto.SignupReqDto;
 import com.ron.backend.dto.UserDto;
 import com.ron.backend.entity.UserHistory;
 import com.ron.backend.entity.Users;
+import com.ron.backend.repository.JobMatchRepository;
 import com.ron.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,16 +1,10 @@
 package com.ron.backend.service;
 
 import com.ron.backend.dto.*;
-import com.ron.backend.entity.Analysis;
-import com.ron.backend.entity.UserData;
-import com.ron.backend.entity.UserHistory;
-import com.ron.backend.entity.Users;
+import com.ron.backend.entity.*;
 import com.ron.backend.exception.DuplicateFoundException;
 import com.ron.backend.exception.UserNotFoundException;
-import com.ron.backend.repository.AnalysisRepository;
-import com.ron.backend.repository.HistoryRepository;
-import com.ron.backend.repository.UserDataRepository;
-import com.ron.backend.repository.UserRepository;
+import com.ron.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +48,9 @@ public class UserService {
 
     @Autowired
     private analyzeService aService;
+
+    @Autowired
+    private JobMatchRepository jobMatchRepo;
 
     //sign-up
     public ResponseLoginDto signup(SignupReqDto dto) {
@@ -162,6 +159,7 @@ public class UserService {
         //limit, totalAnalysis, avgAts, plan, history recent 4,5 history.
 
         UserData userData = userDataRepo.findByUserId(user.getId());
+        List<JobMatchAnalysis> jobMatchList = jobMatchRepo.findAllByUser_Id(user.getId());
         aService.resetDailyLimit(userData); //reset daily limit if changed!
 
         Long limit = userData.getRemainingLimit();
@@ -179,6 +177,7 @@ public class UserService {
         response.setLimit(limit);
         response.setAvgAtsScore(avgAtsScore);
         response.setIsBlock(userData.getBlock());
+        response.setTotalJobMatchAnalyses(jobMatchList.size());
 
         //recent top 5 analysis.
         List<HistoryResponseDto> recentActivity = new ArrayList<>();
