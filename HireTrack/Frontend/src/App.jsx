@@ -1,69 +1,77 @@
-import {Routes, Route} from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {Routes, Route} from 'react-router-dom';
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import SignupPage from "./pages/signup";
-import LoginPage from "./pages/login";
-import IntroPage from "./pages/Intro";
+import SignupPage from './pages/signup';
+import LoginPage from './pages/login';
+import IntroPage from './pages/Intro';
 
-import AnalysisOutputPage from "./pages/output";
-import ProfilePage from "./pages/profile";
-import ProtectedRoute from "./components-project/protectedRoute";
-import ManagerComponenet from "./pages/manage";
-import AboutSection from "./pages/about";
+import AnalysisOutputPage from './pages/output';
+import ProfilePage from './pages/profile';
+import ProtectedRoute from './components-project/protectedRoute';
+import ManagerComponenet from './pages/manage';
+import AboutSection from './pages/about';
+import ResumeUploadPage from './components-project/resumeUploadPage';
 
 function App() {
   return (
-    <> 
-    <ToastContainer />
-    
-    <Routes>
+    <>
+      <ToastContainer />
 
-      {/* Public Routes */}
-      <Route path="/" element={<IntroPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
-      {/* Protected Routes */}
-      <Route
-        path="/main"
-        element={
-          <ProtectedRoute>
-            <ManagerComponenet />
-          </ProtectedRoute>
-        }
-      />
+        {/* Protected Routes */}
+        <Route
+          path="/main"
+          element={
+            <ProtectedRoute>
+              <ManagerComponenet />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/analysis-output"
-        element={
-          <ProtectedRoute>
-            <AnalysisOutputPage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/analysis-output"
+          element={
+            <ProtectedRoute>
+              <AnalysisOutputPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/analyze-resume"
+          element={
+            <ProtectedRoute>
+              <ResumeUploadPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/about"
-        element={
-          <ProtectedRoute>
-            <AboutSection />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
 
-    </Routes>
+        <Route
+          path="/about"
+          element={
+            <ProtectedRoute>
+              <AboutSection />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </>
   );
 }
- 
-export default App
+
+export default App;

@@ -57,7 +57,7 @@ export function HistoryTable({
   }
 
   return (
-    <div className="w-full max-w-[95%] flex flex-col gap-6 mx-auto overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+    <div className="w-full max-w-[95%] flex flex-col gap-6 mx-auto overflow-x-auto rounded-2xl border border-gray-200 shadow-sm mt-36">
       <div className="pt-4 flex justify-between px-6 items-center">
         <h1 className="text-lg md:text-xl font-bold tracking-wide">
           HISTORY TABLE

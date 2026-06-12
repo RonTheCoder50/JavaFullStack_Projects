@@ -5,10 +5,11 @@ function HeroCard({ name, value }) {
     return (
         <div
             className="
-                w-full max-w-[85%] sm:max-w-[300px]
+                w-full max-w-[85%] 
+                sm:max-w-[300px]
                 min-h-[220px]
                 mx-auto
-                rounded-2xl
+                rounded-3xl
                 border border-gray-200
                 shadow-sm
                 hover:shadow-lg
@@ -16,11 +17,11 @@ function HeroCard({ name, value }) {
                 hover:border-sky-300
                 transition-all duration-300
                 flex flex-col items-center justify-center
-                gap-5
+                gap-8
                 px-6 py-8
             "
         >
-            <div className="space-y-2 text-center">
+            <div className="space-y-2 text-center flex flex-col gap-4">
                 <h2
                     className={`
                         text-base sm:text-lg
@@ -32,7 +33,7 @@ function HeroCard({ name, value }) {
                     {name}
                 </h2>
 
-                <div className="w-14 h-[3px] bg-sky-400 rounded-full mx-auto" />
+                <div className="w-[75%] h-0.75 bg-sky-400 rounded-full mx-auto" />
             </div>
 
             <p

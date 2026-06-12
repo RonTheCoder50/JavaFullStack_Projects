@@ -42,7 +42,7 @@ export default function UserNavbar({ status, handleStatus }) {
                 shadow-md 
                 border 
                 px-7 
-                ${theme === 'light' ? 'bg-white' : 'bg-zinc-800'}
+                ${theme === 'light' ? 'bg-white' : 'bg-slate-800'}
             `}
         >
             <h1 className="tracking-normal font-medium">
@@ -143,6 +143,7 @@ export default function UserNavbar({ status, handleStatus }) {
                 shadow-md 
                 border 
                 px-7
+                fixed
                 ${theme === 'light' ? 'bg-white' : 'bg-zinc-800'}
             `}
         >
@@ -205,6 +206,8 @@ function NavBox({ value, status }) {
             className={`
             ${theme === 'light' && status === value.toLowerCase()
                 ? 'bg-sky-200/90 border-gray-300' 
+                : theme === 'dark' && status === value.toLowerCase()
+                ? 'bg-slate-700'
                 : theme === 'light' 
                 ? 'bg-white border-gray-400' 
                 : 'bg-zinc-800 border-gray-500'
@@ -212,8 +215,8 @@ function NavBox({ value, status }) {
             border
             hover:shadow-sm
           shadow-sky-400
-            rounded-md py-1
-            px-2 hover:translate-y-1 
+            rounded-lg py-1
+            px-2.5 hover:translate-y-1 
             transition-all 
             delay-75
             duration-200 

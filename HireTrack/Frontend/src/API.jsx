@@ -157,6 +157,33 @@ export async function getHistoryAnalysisAPI(
     }
 }
 
+export async function analyzeJobMatchingAPI(file, jobDescription) {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await axios.post(
+            `${API}/file/job-matching`,
+            {
+                params: {
+                    file: formData,
+                    description: jobDescription
+                },
+                
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        return response.data;
+    } catch(err) {
+        const msg = err.response?.data?.message;
+        toast.error(msg);
+    }
+}
+
 //ADMIN API's
 
 export async function fetchAdminDataAPI() {
