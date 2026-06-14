@@ -86,18 +86,9 @@ export default function JobMatcherPage() {
         items-center
         gap-20  
         p-6
-        mt-6
+        mt-4
     `}
     >
-      <div className="fixed top-10 left-5 my-4 z-50">
-        <Button
-          onClick={() => navigate("/main")}
-          className={`border border-red-400 py-1.5 px-3 bg-pink-800 text-white/90 rounded-xl cursor-default hover:scale-102`}
-        >
-          Go Back
-        </Button>
-      </div>
-
       {/* Heading..*/}
       <div
         className="
@@ -107,15 +98,29 @@ export default function JobMatcherPage() {
         rounded-sm
         py-2
         px-4
+        flex 
+        justify-center
+        relative
       "
       >
-        <h1 className="text-lg sm:text-xl font-semibold text-center">
-          Resume vs Job Description
-        </h1>
+        <div className="absolute left-0 sm:left-5 p-1 z-50">
+          <Button
+            onClick={() => navigate("/main")}
+            className={`border border-red-400 py-1.5 px-2 sm:px-3 bg-pink-800 text-white/90 rounded-xl cursor-default hover:scale-102 text-xs sm:text-sm`}
+          >
+            Go Back
+          </Button>
+        </div>
 
-        <p className="text-xs sm:text-sm text-gray-500 mt-2 text-center">
-          Get an instant match score, skill gap analysis, and feedback.
-        </p>
+        <div className="flex flex-col items-center gap-0">
+          <h1 className="text-lg sm:text-xl font-semibold text-center">
+            Resume vs Job Description
+          </h1>
+
+          <p className="text-xs sm:text-sm text-gray-500 mt-2 text-center">
+            Get an instant match score, skill gap analysis, and feedback.
+          </p>
+        </div>
       </div>
 
       <div className="absolute top-28 left-1/2 -translate-x-1/2">
@@ -145,7 +150,7 @@ export default function JobMatcherPage() {
           onChange={(e) => setText(e.target.value)}
           className={`
             w-full 
-            max-w-[300px] 
+            max-w-[400px] 
             sm:max-w-[450px] 
             border
             py-2 px-4

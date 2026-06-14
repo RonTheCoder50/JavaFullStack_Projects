@@ -61,7 +61,7 @@ function HeroCard({ name, value }) {
         w-full
         rounded-3xl
         border
-        p-6
+        p-5
         transition-all duration-300
         hover:-translate-y-1
         hover:shadow-xl

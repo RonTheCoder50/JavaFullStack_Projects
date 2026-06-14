@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { FiMoon } from "react-icons/fi";
-import { 
-    MdOutlineWbSunny,
-    MdOutlineClear, 
-    MdOutlineDashboard,
-    MdOutlineHistory,
-    MdOutlinePriceCheck
+import {
+  MdOutlineWbSunny,
+  MdOutlineClear,
+  MdOutlineDashboard,
+  MdOutlineHistory,
+  MdOutlinePriceCheck,
 } from "react-icons/md";
 
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -14,20 +14,20 @@ import { useNavigate } from "react-router";
 import { useTheme } from "./theme";
 
 export default function UserNavbar({ status, handleStatus }) {
-    const { theme, toggleTheme } = useTheme();
-    const [sideToggle, isSideToggle] = useState(false);
-    const user = JSON.parse(localStorage.getItem('user'));
-    const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const [sideToggle, isSideToggle] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
 
-    function toggleSideBar() {
-        isSideToggle(!sideToggle);
-    }
+  function toggleSideBar() {
+    isSideToggle(!sideToggle);
+  }
 
-    return (
-        <>
-        <nav
-            className={`
-                sm:hidden
+  return (
+    <>
+      <nav
+        className={`
+                md:hidden
                 w-full 
                 max-w-[90%] 
                 xl:max-w-[80%] 
@@ -42,24 +42,22 @@ export default function UserNavbar({ status, handleStatus }) {
                 shadow-md 
                 border 
                 px-7 
-                ${theme === 'light' ? 'bg-white' : 'bg-slate-800'}
+                ${theme === "light" ? "bg-white" : "bg-slate-800"}
             `}
-        >
-            <h1 className="tracking-normal font-medium">
-                HireTrack
-            </h1>
+      >
+        <h1 className="tracking-normal font-medium">HireTrack</h1>
 
-            <RxHamburgerMenu
-                onClick={() => {
-                    toggleSideBar()
-                }} 
-                size={26} 
-                className="hover:shadow-sm p-1 rounded-lg"
-            />
+        <RxHamburgerMenu
+          onClick={() => {
+            toggleSideBar();
+          }}
+          size={26}
+          className="hover:shadow-sm p-1 rounded-lg"
+        />
 
-            {sideToggle && 
-                <div 
-                    className={`
+        {sideToggle && (
+          <div
+            className={`
                         absolute 
                         h-full 
                         w-[95%] 
@@ -69,67 +67,61 @@ export default function UserNavbar({ status, handleStatus }) {
                         flex flex-col 
                         gap-4 
                         shadow-md/30
-                        ${theme === 'light'
-                            ? 'bg-gray-100/90'
-                            : 'bg-zinc-900'
-                        }
+                        ${theme === "light" ? "bg-gray-100/90" : "bg-zinc-900"}
                     `}
-                >
-                    <MdOutlineClear
-                        onClick={() => toggleSideBar()}
-                        size={28} 
-                        className="m-2 hover:shadow-sm p-1 rounded-full"
-                    />
+          >
+            <MdOutlineClear
+              onClick={() => toggleSideBar()}
+              size={28}
+              className="m-2 hover:shadow-sm p-1 rounded-full"
+            />
 
-                    <div 
-                        onClick={() => toggleSideBar()}
-                        className="flex flex-col items-center gap-2 md:gap-8 lg:gap-12 xl:gap-14">
-                         
-                        <Box
-                            value={'Dashboard'}
-                            page={'dashboard'}
-                            Icon={MdOutlineDashboard}
-                            onSmash={handleStatus}
-                        />
+            <div
+              onClick={() => toggleSideBar()}
+              className="flex flex-col items-center gap-2 md:gap-8 lg:gap-12 xl:gap-14"
+            >
+              <Box
+                value={"Dashboard"}
+                page={"dashboard"}
+                Icon={MdOutlineDashboard}
+                onSmash={handleStatus}
+              />
 
-                        <Box 
-                            value={'History'}
-                            page={'history'}
-                            Icon={MdOutlineHistory}
-                            onSmash={handleStatus}
-                        />
+              <Box
+                value={"History"}
+                page={"history"}
+                Icon={MdOutlineHistory}
+                onSmash={handleStatus}
+              />
 
-                        <Box 
-                            value={'Pricing'}
-                            page={'pricing'}
-                            Icon={MdOutlinePriceCheck}
-                            onSmash={handleStatus}
-                        />
+              <Box
+                value={"Pricing"}
+                page={"pricing"}
+                Icon={MdOutlinePriceCheck}
+                onSmash={handleStatus}
+              />
 
-                        <Box 
-                            value={'Profile'}
-                            page={'profile'}
-                            Icon={FaRegUser}
-                            onSmash={handleStatus}
-                        />
+              <Box
+                value={"Profile"}
+                page={"profile"}
+                Icon={FaRegUser}
+                onSmash={handleStatus}
+              />
 
-                        <Box 
-                            value={theme === 'light' ? 'Light' : 'Dark'}
-                            Icon={theme === 'light'
-                                ? MdOutlineWbSunny 
-                                : FiMoon 
-                            }
-                            onSmash={toggleTheme}
-                        />
-                    </div>
-                </div>
-            }
-        </nav>
-        
-        <nav 
-            className={`
+              <Box
+                value={theme === "light" ? "Light" : "Dark"}
+                Icon={theme === "light" ? MdOutlineWbSunny : FiMoon}
+                onSmash={toggleTheme}
+              />
+            </div>
+          </div>
+        )}
+      </nav>
+
+      <nav
+        className={`
                 hidden 
-                sm:flex
+                md:flex
                 w-full 
                 max-w-[90%] 
                 xl:max-w-[80%] 
@@ -144,78 +136,72 @@ export default function UserNavbar({ status, handleStatus }) {
                 border 
                 px-7
                 fixed
-                ${theme === 'light' ? 'bg-white' : 'bg-zinc-800'}
+                ${theme === "light" ? "bg-white" : "bg-zinc-800"}
             `}
+      >
+        <h1 className="tracking-normal font-medium">HireTrack</h1>
+
+        <div
+          onClick={(e) => handleStatus(e.target.value)}
+          className="flex items-center gap-6 md:gap-8 lg:gap-12 xl:gap-14"
         >
-            <h1 className="tracking-normal font-medium">
-                HireTrack
-            </h1>
+          <NavBox value={"Dashboard"} status={status} />
 
-            <div onClick={(e) => handleStatus(e.target.value)} 
-                className="flex items-center gap-6 md:gap-8 lg:gap-12 xl:gap-14">
-                <NavBox
-                    value={'Dashboard'}
-                    status={status}
-                />
+          <NavBox value={"History"} status={status} />
 
-                <NavBox
-                    value={'History'}
-                    status={status}
-                />
-                
-                <NavBox
-                    value={'Pricing'}
-                    status={status}
-                />
-            </div>
-            
-            <div className="flex items-center gap-4 lg:gap:6 xl:gap-10 text-sm md:text-base">
-                <button 
-                    onClick={() => navigate('/profile', {
-                        state: {
-                            userdata: user
-                        }
-                    })}
-                    className="w-8 h-8 flex justify-center items-center rounded-full border hover:shadow-sm cursor-default hover:border-sky-400"
-                >
+          <NavBox value={"Pricing"} status={status} />
+        </div>
 
-                    {user?.username.charAt(0)}
-                </button>
+        <div className="flex items-center gap-4 lg:gap:6 text-sm md:text-base">
+          <button
+            onClick={() =>
+              navigate("/profile", {
+                state: {
+                  userdata: user,
+                },
+              })
+            }
+            className="w-8 h-8 flex justify-center items-center rounded-full border hover:shadow-sm cursor-default hover:border-sky-400"
+          >
+            {user?.username.charAt(0)}
+          </button>
 
-                <div 
-                    className="border p-1.5 rounded-full hover:border-sky-500"
-                    onClick={() => toggleTheme()}
-                >
-                    {theme === 'light' 
-                        ? <FiMoon size={16} />
-                        : <MdOutlineWbSunny size={16} />
-                    }
-                </div>
-            </div>
-        </nav>
-        </>
-    )
+          <div
+            className="flex justify-center items-center border w-8 h-8 rounded-full hover:border-sky-500"
+            onClick={() => toggleTheme()}
+          >
+            {theme === "light" ? (
+              <FiMoon size={16} />
+            ) : (
+              <MdOutlineWbSunny size={16} />
+            )}
+          </div>
+        </div>
+      </nav>
+    </>
+  );
 }
 
 function NavBox({ value, status }) {
-    const { theme } = useTheme();
-    
-    return (
-        <button
-            value={value.toLowerCase()}
-            className={`
-            ${theme === 'light' && status === value.toLowerCase()
-                ? 'bg-sky-200/90 border-gray-300' 
-                : theme === 'dark' && status === value.toLowerCase()
-                ? 'bg-slate-700'
-                : theme === 'light' 
-                ? 'bg-white border-gray-400' 
-                : 'bg-zinc-800 border-gray-500'
+  const { theme } = useTheme();
+
+  return (
+    <button
+      value={value.toLowerCase()}
+      className={`
+            ${
+              theme === "light" && status === value.toLowerCase()
+                ? "bg-sky-200/90 border-gray-300"
+                : theme === "dark" && status === value.toLowerCase()
+                  ? "bg-slate-700"
+                  : theme === "light"
+                    ? "bg-white border-gray-400"
+                    : "bg-zinc-800 border-gray-500"
             }
             border
             hover:shadow-sm
           shadow-sky-400
-            rounded-lg py-1
+            rounded-md py-1
             px-2.5 hover:translate-y-1 
             transition-all 
             delay-75
@@ -224,23 +210,25 @@ function NavBox({ value, status }) {
             md:text-base 
             tracking-wide
             cursor-default
+            w-28
+            text-center
         `}
-        >
-            {value}
-        </button>
-    );
+    >
+      {value}
+    </button>
+  );
 }
 
 function Box({ value, page, Icon, onSmash }) {
-    const { theme } = useTheme();
-    const navigate = useNavigate();
-    return (
-        <div 
-            onClick={() => {
-                if(page === 'profile') navigate('/profile');
-                onSmash(page)
-            }} 
-            className={`
+  const { theme } = useTheme();
+  const navigate = useNavigate();
+  return (
+    <div
+      onClick={() => {
+        if (page === "profile") navigate("/profile");
+        onSmash(page);
+      }}
+      className={`
                 py-2 
                 px-4 
                 w-full 
@@ -249,16 +237,15 @@ function Box({ value, page, Icon, onSmash }) {
                 items-center 
                 gap-2 
                 rounded-sm
-                ${theme === 'light'
-                    ? 'bg-white hover:bg-gray-50'
-                    : 'bg-zinc-800 hover:bg-zinc-950'
+                ${
+                  theme === "light"
+                    ? "bg-white hover:bg-gray-50"
+                    : "bg-zinc-800 hover:bg-zinc-950"
                 }
             `}
-        >
-            <Icon />
-            <span>
-                {value}
-            </span>
-        </div>
-    )
+    >
+      <Icon />
+      <span>{value}</span>
+    </div>
+  );
 }

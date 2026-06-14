@@ -153,7 +153,7 @@ export default function UserDashBoard() {
                     sm:my-4 
                     gap-16
                     mt-0
-                    sm:mt-36
+                    md:mt-40
                 `}
         >
           <div className="flex flex-col gap-2 my-3 mx-auto">
@@ -169,7 +169,7 @@ export default function UserDashBoard() {
             </p>
           </div>
 
-          <div className="w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+          <div className="w-full max-w-[85%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 my-8">
             <HeroCard
               name={"Total Resumes Analyzed"}
               value={data?.totalAnalysis || 0}
@@ -196,7 +196,7 @@ export default function UserDashBoard() {
             />
           </div>
 
-          <div className="w-full flex flex-col gap-8 items-center my-12">
+          <div className="w-full flex flex-col gap-8 items-center my-20">
             <DashboardBox
               onSmash={"/analyze-resume"}
               value={"Analyze Your Resume."}
@@ -210,10 +210,6 @@ export default function UserDashBoard() {
           </div>
 
           <div className="my-4 flex flex-col gap-4">
-            <h1 className="p-4 ml-3 sm:ml-6 text-base md:text-xl underline underline-offset-2 decoration-sky-300">
-              Recent Activity
-            </h1>
-
             <DashBoardHistoryFunc
               data={data?.analysisHistory}
               refresh={() => fetchUserData()}
@@ -311,11 +307,13 @@ export default function UserDashBoard() {
         />
       ) : (
         status === "history" && (
-          <p className="text-center text-2xl font-medium mt-14">Loading...</p>
+          <p className="text-center text-2xl font-medium mt-32">Loading...</p>
         )
       )}
 
-      {status === "pricing" && <PricingPage />}
+      {status === "pricing" && (
+        <PricingPage navigateToMain={() => setStatus("dashboard")} />
+      )}
     </section>
   );
 }
@@ -328,7 +326,8 @@ function DashboardBox({ onSmash, value, theme }) {
       className={`
                 w-full 
                 max-w-[85%] 
-                sm:max-w-[550px] 
+                md:max-w-[750px] 
+                lg:max-w-[900px]
                 flex 
                 justify-between 
                 items-center 
