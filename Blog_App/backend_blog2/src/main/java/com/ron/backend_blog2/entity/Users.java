@@ -9,8 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -40,4 +43,12 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Bookmark> bookmarks;
+
+    public Users(String username, @Nullable String password, Collection<? extends GrantedAuthority> authorities) {
+    }
+
+    public Users(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

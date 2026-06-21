@@ -58,9 +58,8 @@ public class UserService {
             request.getSession(true);
 
             return repo.findByEmail(user.getEmail());
-        } catch(Exception ex) {
+        } catch(UnAuthorizedException ex) {
             System.err.println(ex.getMessage());
-//            return null;
             throw new UnAuthorizedException("user not found!");
         }
     }
