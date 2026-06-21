@@ -27,6 +27,11 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok(userService.test());
+    }
+
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> register(@RequestBody Users user) throws RuntimeException {
         Users us = userService.userRegister(user);

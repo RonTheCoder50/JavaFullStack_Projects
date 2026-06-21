@@ -3,11 +3,30 @@ import { Button } from "@/components/ui/button";
 
 import { useNavigate } from "react-router";
 import { userLoginAPI, userProfileAPI } from "./API";
+import { useEffect, useState } from "react";
+
+import { testCall } from "./API";
+import { toast } from "sonner";
 
 export default function IntroPage() {
   const navigate = useNavigate();
+  const [demo, setDemo] = useState(false);
+  const [wakeup, setWakeup] = useState(false);
+
+  useEffect(() => {
+    async function wakeUpServer() {
+      const resp = await testCall();
+      if (resp.status === 200) {
+        setWakeup(true);
+        toast.success("server wake up.");
+      }
+    }
+
+    wakeUpServer();
+  }, []);
 
   async function handleDemo() {
+    setDemo(true);
     localStorage.removeItem("user");
 
     const info = {
@@ -35,49 +54,6 @@ export default function IntroPage() {
     }
   }
 
-  // return (
-  //   <section className="min-h-screen w-full flex flex-col items-center justify-center bg-zinc-950">
-  //     {/* Header */}
-  //     <div className="absolute top-0 w-full text-center py-5 text-xl font-semibold tracking-wide shadow-sm bg-zinc-900">
-  //       <h2 className="text-gray-100">Blog Web-App</h2>
-  //       <Button
-  //         onClick={() => handleDemo()}
-  //         className="absolute top-5 right-5 rounded-md shadow-md border border-gray-600  text-gray-100 font-medium hover:scale-103 transition-all duration-300 text-sm px-2 py-1"
-  //       >
-  //         DEMO FOR RECRUTERS
-  //       </Button>
-  //     </div>
-
-  //     {/* Main Content */}
-  //     <div className="flex flex-col items-center gap-6 text-center">
-  //       <h1 className="text-4xl font-bold text-gray-800">
-  //         Welcome to Your Blog Platform ✍️
-  //       </h1>
-
-  //       <p className="text-gray-600 text-lg max-w-md">
-  //         Share your thoughts, explore ideas, and connect with others.
-  //       </p>
-
-  //       {/* Buttons */}
-  //       <div className="flex gap-6 mt-4">
-  //         <Link
-  //           to="/register"
-  //           className="px-6 py-2 rounded-xl bg-blue-500 text-white font-medium shadow-md hover:bg-blue-600 hover:scale-105 transition-all duration-300"
-  //         >
-  //           Sign Up
-  //         </Link>
-
-  //         <Link
-  //           to="/login"
-  //           className="px-6 py-2 rounded-xl border border-gray-400 text-gray-700 font-medium hover:bg-gray-800 hover:text-white hover:scale-105 transition-all duration-300"
-  //         >
-  //           Log In
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   </section>
-  // );
-
   return (
     <section className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black text-white">
       {/* Navbar */}
@@ -87,10 +63,19 @@ export default function IntroPage() {
         </h2>
 
         <Button
+          disabled={demo}
           onClick={handleDemo}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          className={`
+            text-white 
+            rounded-lg
+            ${
+              !wakeup
+                ? "pointer-events-none bg-gray-700 text-gray-400"
+                : "bg-blue-600 hover:bg-blue-700"
+            }
+          `}
         >
-          Demo Account
+          {demo ? "wait..." : "Demo Account"}
         </Button>
       </header>
 
@@ -113,14 +98,35 @@ export default function IntroPage() {
           <div className="mt-10 flex justify-center gap-4">
             <Link
               to="/register"
-              className="rounded-lg bg-blue-600 px-7 py-3 font-medium transition hover:bg-blue-700"
+              className={`
+                rounded-lg 
+                px-7 
+                py-3 
+                font-medium 
+                transition 
+                ${
+                  !wakeup
+                    ? "pointer-events-none bg-gray-700 text-gray-400"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }
+              `}
             >
               Get Started
             </Link>
 
             <Link
               to="/login"
-              className="rounded-lg border border-zinc-700 px-7 py-3 font-medium transition hover:bg-zinc-800"
+              className={`
+                rounded-lg 
+                border 
+                border-zinc-700 
+                px-7 
+                py-3 
+                font-medium 
+                transition 
+                hover:bg-zinc-800
+                ${!wakeup ? "pointer-events-none text-gray-500" : "text-white"}
+              `}
             >
               Login
             </Link>

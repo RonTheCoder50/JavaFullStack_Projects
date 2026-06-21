@@ -31,7 +31,7 @@ public class UserService {
     public Users userRegister(Users user) {
         Users isExist = repo.findByEmail(user.getEmail());
         if(isExist != null){
-            return null;
+            throw new UnAuthorizedException("User already exist with this email");
         }
 
         LocalDate now = LocalDate.now();
@@ -83,5 +83,9 @@ public class UserService {
 
     public List<Users> getAllUsers() {
         return repo.findAll();
+    }
+
+    public String test() {
+        return "server wakeup";
     }
 }
