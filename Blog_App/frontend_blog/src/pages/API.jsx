@@ -229,3 +229,21 @@ export async function updatePostAPI(data, token) {
     toast.warning("something went wrong, try again!");
   }
 }
+
+export async function isBookMarkedAPI(id, user_id) {
+  try {
+    const response = await axios.post(
+      `http://localhost:8080/post/bookmark/exist/${id}/${user_id}`,
+      {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    toast.warning("something went wrong.");
+  }
+}

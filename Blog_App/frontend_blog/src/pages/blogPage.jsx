@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import axios from "axios";
 import { useParams, useNavigate } from "react-router";
 import {
   getPostAPI,
@@ -15,6 +14,7 @@ import {
   postCommentAPI,
   bookmarkAPI,
   deleteBlogAPI,
+  isBookMarkedAPI,
 } from "./API";
 
 import { updatePostAPI } from "./API";
@@ -122,14 +122,8 @@ export default function BlogPage_Card() {
 
   useEffect(() => {
     async function apiCall() {
-      const api = await axios.get(`http://localhost:8080/post/${id}`, {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
-      setBlogData(api.data);
-
-      console.log(api.data);
+      const apiResponse = await getPostAPI(id, token);
+      setBlogData(apiResponse.data);
     }
 
     apiCall();
@@ -137,16 +131,9 @@ export default function BlogPage_Card() {
 
   useEffect(() => {
     async function apiBookMarkExistCall() {
-      const api = await axios.post(
-        `http://localhost:8080/post/bookmark/exist/${id}/${user_id}`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const response = await isBookMarkedAPI(id, user_id);
 
-      if (api.data) {
+      if (response.data) {
         setToggleBookMark(true);
       } else {
         setToggleBookMark(false);
@@ -282,7 +269,7 @@ export default function BlogPage_Card() {
                         ${theme === "dark" ? "text-gray-400" : "text-gray-800"}
                     `}
           >
-            {blogData ? blogData.title : "How to Build Secure Spring Boot APIs"}
+            {blogData ? blogData.title : "Loading..."}
           </h2>
 
           {/* Description */}
@@ -293,17 +280,14 @@ export default function BlogPage_Card() {
                         ${theme === "dark" ? "text-gray-300" : "text-gray-600"}
                     `}
           >
-            {blogData
-              ? blogData.content
-              : "Learn how to implement authentication and authorization using Spring Security" +
-                "and JWT. This guide covers best practices for building scalable backend systems."}
+            {blogData ? blogData.content : "wait..."}
           </p>
 
           {/* Author + Dates */}
           <div className="text-xs text-gray-500 mb-4 flex flex-col gap-1">
             <span>
               ✍️ Author:
-              {blogData ? " " + blogData.author : " Rohan"}
+              {blogData ? " " + blogData.author : "unknwon"}
             </span>
             <span>
               📅 Created:
