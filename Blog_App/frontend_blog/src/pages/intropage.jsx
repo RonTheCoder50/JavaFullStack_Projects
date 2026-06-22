@@ -79,6 +79,12 @@ export default function IntroPage() {
         </Button>
       </header>
 
+      {!wakeup && (
+        <p className="mx-auto w-full max-w-[85%] sm:max-w-[350px] text-center text-gray-400 py-1 px-2 border border-yellow-800 animate-pulse rounded-2xl text-sm">
+          Server is in process (free tier wait 1-2 minutes.)
+        </p>
+      )}
+
       {/* Hero Section */}
       <div className="mt-8 flex min-h-[80vh] items-center justify-center px-6 py-4">
         <div className="max-w-3xl text-center">
